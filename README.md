@@ -80,6 +80,30 @@ And then do the initial import with Imposm3
     /opt/imposm3/imposm3 import -cachedir . -config /opt/oim-styles/osmosis/imposm3.conf -mapping /opt/oim-styles/mapping.yml -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff
     cp /data/updates/last.state.txt /data/updates/state.txt
 
+Finally populate views of PgSQL database
+
+    psql -d osm -f views.sql
+
+A script is here to help :
+
+    ./reload_db.sh [--load-osm]
+
+### Reload database
+Basically, database reload consists in :
+* Stopping continuous updates timer
+
+    sudo systemctl stop osm-update.timer
+
+* Eventually dowload up to date OSM extract from Geofabrik
+* Use imposm3 to process OSM extract and move last state to osmosis working dir
+* Activate continuous updates timer
+
+    sudo systemctl start osm-update.timer
+
+A script is here to help :
+
+    ./reload_db.sh [--load-osm]
+
 ## Running
 
 ### Manage tile server
