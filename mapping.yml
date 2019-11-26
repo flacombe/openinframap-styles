@@ -384,6 +384,9 @@ tables:
     - key: ref
       name: ref
       type: string
+    - key: telecom
+      name: telecom
+      type: string
     - key: telecom:medium
       name: telecom:medium
       type: string
@@ -408,6 +411,9 @@ tables:
       type: string
     - key: ref
       name: ref
+      type: string
+    - key: telecom
+      name: telecom
       type: string
     - key: telecom:medium
       name: telecom:medium
