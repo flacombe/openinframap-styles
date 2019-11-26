@@ -185,12 +185,12 @@ sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Simplify(geometry, ZRes(!ZOOM!) / 5,
 [[providers.layers]]
 geometry_type = "Polygon"
 name = "telecoms_sites"
-sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, \"telecom:medium\" FROM osm_telecom_sites_polygon WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, telecom, \"telecom:medium\" FROM osm_telecom_sites_polygon WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
 [[providers.layers]]
 geometry_type = "Point"
 name = "telecoms_sites_points"
-sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, \"telecom:medium\" FROM osm_telecom_sites_points WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, telecom, \"telecom:medium\" FROM osm_telecom_sites_points WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
 [[providers.layers]]
 name = "telecoms_mast"
