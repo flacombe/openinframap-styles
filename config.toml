@@ -190,7 +190,7 @@ sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref,
 [[providers.layers]]
 geometry_type = "Point"
 name = "telecoms_sites_points"
-sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, telecom, \"telecom:medium\" FROM osm_telecom_sites_points WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, TRUE AS is_node, 0 AS area, operator, name, ref, telecom, \"telecom:medium\" FROM osm_telecom_sites_points WHERE geometry && !BBOX! AND !ZOOM! >= 10 UNION ALL SELECT osm_id AS gid, ST_AsBinary(ST_Centroid(geometry)) AS geom, FALSE AS is_node, round(ST_Area(geometry)) AS area, operator, name, ref, telecom, \"telecom:medium\" FROM osm_telecom_sites_polygon WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
 [[providers.layers]]
 name = "telecoms_mast"
