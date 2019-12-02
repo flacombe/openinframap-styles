@@ -75,8 +75,23 @@ tables:
     - key: location:transition
       name: transition
       type: bool
+    - key: line_attachment
+      name: line_attachment
+      type: string
+    - key: switch
+      name: switch
+      type: string
+    - key: remotely_controllable
+      name: remotely_controllable
+      type: string
     - key: ref
       name: ref
+      type: string
+    - key: ref:ERDF:gdo
+      name: ref:ERDF:gdo
+      type: string
+    - key: ref:FR:RTE
+      name: ref:FR:RTE
       type: string
     mapping:
       power:
@@ -115,6 +130,15 @@ tables:
     - key: ref
       name: ref
       type: string
+    - key: ref:ERDF:gdo
+      name: ref:ERDF:gdo
+      type: string
+    - key: ref:FR:RTE
+      name: ref:FR:RTE
+      type: string
+    - key: remotely_controllable
+      name: remotely_controllable
+      type: string
     - name: type
       type: mapping_value
     type_mappings:
@@ -151,8 +175,17 @@ tables:
     - key: frequency
       name: frequency
       type: string
+    - key: switch
+      name: switch
+      type: string
     - key: ref
       name: ref
+      type: string
+    - key: ref:ERDF:gdo
+      name: ref:ERDF:gdo
+      type: string
+    - key: ref:FR:RTE
+      name: ref:FR:RTE
       type: string
     - name: type
       type: mapping_value
@@ -335,6 +368,7 @@ tables:
         power:
           - generator
     type: geometry
+
   comms_cable:
     fields:
     - name: osm_id
@@ -369,6 +403,7 @@ tables:
       - line
       - cable
     type: linestring
+
   telecom_sites_polygon:
     fields:
     - name: osm_id
@@ -390,6 +425,18 @@ tables:
     - key: telecom:medium
       name: telecom:medium
       type: string
+    - key: ref:FR:ARCEP
+      name: ref:FR:ARCEP
+      type: string
+    - key: ref:FR:Orange
+      name: ref:FR:Orange
+      type: string
+    - key: ref:FR:PTT
+      name: ref:FR:PTT
+      type: string
+    - key: ref:FR:SFR
+      name: ref:FR:SFR
+      type: string
     mapping:
       telecom:
         - data_center
@@ -397,6 +444,7 @@ tables:
         - exchange
         - connection_point
     type: polygon
+
   telecom_sites_points:
     fields:
     - name: osm_id
@@ -418,13 +466,27 @@ tables:
     - key: telecom:medium
       name: telecom:medium
       type: string
+    - key: ref:FR:ARCEP
+      name: ref:FR:ARCEP
+      type: string
+    - key: ref:FR:Orange
+      name: ref:FR:Orange
+      type: string
+    - key: ref:FR:PTT
+      name: ref:FR:PTT
+      type: string
+    - key: ref:FR:SFR
+      name: ref:FR:SFR
+      type: string
     mapping:
       telecom:
         - data_center
         - data_centre
         - exchange
         - connection_point
+        - distribution_point
     type: point
+  
   mast:
     fields:
     - name: osm_id
@@ -469,12 +531,16 @@ tables:
     - key: ref
       name: ref
       type: string
+    - key: ref:FR:ANFR
+      name: ref:FR:ANFR
+      type: string
     mapping:
       man_made:
         - mast
         - tower
         - communications_tower
     type: point
+  
   pipeline:           # Pipelines cover oil/gas and water, etc
     fields:
     - name: osm_id
@@ -492,9 +558,6 @@ tables:
       type: string
     - key: operator
       name: operator
-      type: string
-    - key: type
-      name: type
       type: string
     - key: substance
       name: substance
@@ -555,9 +618,11 @@ tables:
       pipeline:
       - marker
       - valve
+      - surge_tank
       - substation
       - flare
     type: point
+
   petroleum_well:
     fields:
     - name: osm_id
