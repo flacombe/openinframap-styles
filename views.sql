@@ -16,10 +16,10 @@ CREATE INDEX power_substation_relation_geom ON power_substation_relation USING G
 ANALYZE power_substation_relation;
 
 CREATE OR REPLACE VIEW substation AS
-    SELECT osm_id, geometry, name, voltage, frequency, substation, operator, ref
+    SELECT osm_id, geometry, name, voltage, frequency, substation, operator, remotely_controllable, "ref:FR:RTE", "ref:ERDF:gdo", ref
                   FROM osm_power_substation
     UNION
-    SELECT osm_id, geometry, name, voltage, frequency, substation, operator, null as ref
+    SELECT osm_id, geometry, name, voltage, frequency, substation, operator, null as remotely_controllable, null as "ref:FR:RTE", null as "ref:ERDF:gdo", null as ref
                   FROM power_substation_relation;
 
 DROP VIEW IF EXISTS power_plant;
