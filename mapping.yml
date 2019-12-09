@@ -357,6 +357,9 @@ tables:
     - key: generator:output
       name: output
       type: string
+    - key: generator:plant
+      name: generator:plant
+      type: string
     - key: ref
       name: ref
       type: string
@@ -614,6 +617,18 @@ tables:
     - key: ref
       name: ref
       type: string
+    - key: valve
+      name: valve
+      type: string
+    - key: actuator
+      name: actuator
+      type: string
+    - key: diameter
+      name: diameter
+      type: string
+    - key: location
+      name: location
+      type: string
     mapping:
       pipeline:
       - marker
@@ -622,6 +637,44 @@ tables:
       - substation
       - flare
     type: point
+
+  waterways:
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: waterway
+      name: waterway
+      type: string
+    - key: name
+      name: name
+      type: string
+    - key: usage
+      name: usage
+      type: string
+    - key: operator
+      name: operator
+      type: string
+    - key: man_made
+      name: man_made
+      type: string
+    - key: tunnel
+      name: tunnel
+      type: string
+    - key: intermittent
+      name: intermittent
+      type: string
+    - key: diameter
+      name: diameter
+      type: string
+    mapping:
+      waterway:
+      - canal
+      - pressurised
+    type: linestring
 
   petroleum_well:
     fields:
