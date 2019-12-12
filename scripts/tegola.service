@@ -1,0 +1,11 @@
+[Unit]
+Description=tegola
+
+[Service]
+ExecStart=/home/osm/go/bin/tegola serve --config /opt/oim-styles/config.toml
+WorkingDirectory=/home/osm/go/bin/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
