@@ -33,8 +33,8 @@ fi
 (cd $scriptDir/.. && psql -d osm -f views_clean.sql)
 
 # Import initial
-(cd /data/updates && /opt/imposm3/imposm3 import -cachedir . -config /opt/oim-styles/osmosis/imposm3.conf -mapping /opt/oim-styles/mapping.yml -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff)
-cp /data/updates/last.state.txt /data/updates/state.txt
+(cd /data/cache && /opt/imposm3/imposm3 import -config /opt/oim-styles/imposm3/imposm3.conf -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff)
+#cp /data/updates/last.state.txt /data/updates/state.txt
 
 # Views
 (cd $scriptDir/.. && psql -d osm -f views.sql)
