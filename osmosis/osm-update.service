@@ -1,9 +1,0 @@
-[Unit]
-Description=OSM Update Job
-
-[Service]
-Type=oneshot
-User=osm
-Group=osm
-WorkingDirectory=/data/updates
-ExecStart=/opt/oim-styles/osmosis/update.sh

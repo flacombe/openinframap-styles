@@ -1,0 +1,14 @@
+[Unit]
+Description=OSM Update Job
+After=network.target
+
+[Service]
+Type=simple
+User=osm
+Group=osm
+WorkingDirectory=/data/cache
+ExecStart=/opt/oim-styles/imposm3/update.sh
+Restart=on.failure
+
+[Install]
+WantedBy=multi-user.target
