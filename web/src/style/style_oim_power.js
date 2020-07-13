@@ -201,6 +201,29 @@ const substation_radius = [
   15, 3
 ];
 
+const substation_remote_stroke = ["match",
+  ["get", "remotely_controllable"],
+    "radio", "#ad3333",
+    "telephone", "#d1a423",
+    "yes", "#991e9f",
+    "#333"
+  ];
+
+const substation_remote_thickness = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  5, 0,
+  6, 0.1,
+  8, 0.5,
+  12, ["match",
+    ["get", "remotely_controllable"],
+    "radio", 2,
+    "telephone", 2,
+    "yes", 2,
+    1
+  ]
+];
 
 // Determine the minimum zoom a point is visible at (before it can be seen as an
 // area), based on the area of the substation.
@@ -580,7 +603,7 @@ const layers = [
     paint: {
       'fill-opacity': 0.3,
       'fill-color': voltage_color('voltage'),
-      'fill-outline-color': 'rgba(0, 0, 0, 1)',
+      'fill-outline-color': substation_remote_stroke,
     },
   },
   {
@@ -829,20 +852,10 @@ const layers = [
     paint: {
       'circle-radius': substation_radius,
       'circle-color': voltage_color('voltage'),
-      'circle-stroke-color': '#555',
-      'circle-stroke-width': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        5,
-        0.1,
-        8,
-        0.5,
-        15,
-        2,
-      ],
-      'circle-opacity': power_line_opacity,
       'circle-stroke-opacity': power_line_opacity,
+      'circle-stroke-color': substation_remote_stroke,
+      'circle-stroke-width': substation_remote_thickness,
+      'circle-opacity': power_line_opacity
     },
   },
   {
@@ -933,7 +946,7 @@ const layers = [
         ['zoom'],
         8,
         10,
-        18,
+        21,
         [
           'interpolate',
           ['linear'],
@@ -972,7 +985,7 @@ const layers = [
         ['zoom'],
         7,
         10,
-        18,
+        21,
         [
           'interpolate',
           ['linear'],
@@ -1014,7 +1027,7 @@ const layers = [
         ['zoom'],
         7,
         10,
-        18,
+        21,
         [
           'interpolate',
           ['linear'],

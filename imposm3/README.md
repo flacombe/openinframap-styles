@@ -30,12 +30,12 @@ A one-shot run that use a pbf file to import it in a Postgresql database with po
 
 To import a new pbf file from an URL
 ```
-docker run -it -v /data/files/imposm3:/data/files/imposm3 -e DB_URL=localhost:5432/osm -e OSM_FILE=https://download.geofabrik.de/europe/france-latest.osm.pbf oim/imposm3:latest import
+docker run -it --rm --name=imposm -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -e DB_URL=postgres://user:password@pgsqldb:5432/database -e OSM_FILE=https://download.geofabrik.de/europe/france-latest.osm.pbf oim/imposm3:latest import
 ```
 
 To only refresh the database with existing pbf file
 ```
-docker run -it -v /data/files/imposm3:/data/files/imposm3 -e DB_URL=localhost:5432/osm oim/imposm3:latest import
+docker run -it --rm --name=imposm -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -e DB_URL=postgres://user:password@pgsqldb:5432/database oim/imposm3:latest import
 ```
 
 * DBURL: A valid connection string to reach postgresql backend
@@ -46,7 +46,7 @@ docker run -it -v /data/files/imposm3:/data/files/imposm3 -e DB_URL=localhost:54
 Continuous update takes minute diffs from main osm servers and update the previously imported postgresql database.
 
 ```
-docker run -d --rm -e DB_URL=localhost:5432/osm oim/imposm3:latest run
+docker run -d --rm --name=imposm -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -e DB_URL=postgres://user:password@pgsqldb:5432/database oim/imposm3:latest run
 ```
 
 Update container normally runs continously. To reload database, kill it first before running import one.  

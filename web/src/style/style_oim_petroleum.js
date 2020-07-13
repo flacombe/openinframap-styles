@@ -1,4 +1,4 @@
-import { text_paint, font } from './style_oim_common.js';
+import { text_paint, font} from './style_oim_common.js';
 
 const colour_gas = '#BFBC6B';
 const colour_oil = '#6B6B6B';
@@ -7,8 +7,11 @@ const colour_intermediate = '#78CC9E';
 const colour_hydrogen = '#CC78AB';
 const colour_co2 = '#7885CC';
 const colour_unknown = '#BABABA';
+const colour_neutral = '#ABABAB';
 
 const substance = ["coalesce", ["get", "substance"], ["get", "type"], ""];
+const utility = ["coalesce", ["get", "utility"], ""];
+const substation = ["coalesce", ["get", "substation"], ""];
 
 const pipeline_colour = ["match",
   substance,
@@ -19,6 +22,14 @@ const pipeline_colour = ["match",
   'hydrogen', colour_hydrogen,
   'carbon_dioxide', colour_co2,
   colour_unknown
+]
+
+const marker_colour = ["match",
+  utility,
+  ['gas'], colour_gas,
+  ['oil'], colour_oil,
+  ['chemical'], colour_hydrogen,
+  colour_neutral
 ]
 
 const pipeline_label = ["concat",
@@ -33,7 +44,34 @@ const pipeline_label = ["concat",
     ["concat", " (", substance, ")"],
     substance
   ]
-]
+];
+
+const construction_p = ['get', 'construction'];
+const pipeline_opacity = ['interpolate', ['linear'], ['zoom'],
+  4, ['case', construction_p, 0.3, 0.6],
+  8, ['case', construction_p, 0.3, 1]
+];
+
+// Determine substation visibility
+const substation_visible_p = [
+  'any',
+  [
+    'all',
+    ['==', substation, "transmission"],
+    ['>', ['zoom'], 4]
+  ],
+  ['>', ['zoom'], 9],
+];
+
+// Determine the minimum zoom a point is visible at (before it can be seen as an
+// area), based on the area of the substation.
+const substation_point_visible_p = [
+  'any',
+  ['==', ['coalesce', ['get', 'area'], 0], 0], // Area = 0 - mapped as node
+  ['all', ['<', ['coalesce', ['get', 'area'], 0], 100], ['<', ['zoom'], 16]],
+  ['all', ['<', ['coalesce', ['get', 'area'], 0], 250], ['<', ['zoom'], 15]],
+  ['<', ['zoom'], 13],
+];
 
 const layers = [
   {
@@ -45,6 +83,7 @@ const layers = [
     'source-layer': 'petroleum_pipeline',
     paint: {
       'line-color': '#666666',
+      'line-opacity': pipeline_opacity,
       'line-width': ['interpolate', ['linear'], ['zoom'],
         8, 1.5,
         16, ['match', ['get', 'usage'],
@@ -66,6 +105,7 @@ const layers = [
     'source-layer': 'petroleum_pipeline',
     paint: {
       'line-color': pipeline_colour,
+      'line-opacity': pipeline_opacity,
       'line-width': ['interpolate', ['linear'], ['zoom'],
         3, 1,
         16, ['match', ['get', 'usage'],
@@ -75,15 +115,31 @@ const layers = [
     },
   },
   {
+    zorder: 2,
+    id: 'petroleum_marker',
+    type: 'circle',
+    source: 'openinframap',
+    minzoom: 15.5,
+    'source-layer': 'petroleum_marker',
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'],
+        15.5, 2,
+        18.5, 5
+      ],
+      'circle-color': marker_colour
+    },
+  },
+  {
     zorder: 100,
     id: 'petroleum_site',
     type: 'fill',
+    filter: ['all', substation_visible_p],
     source: 'openinframap',
-    minzoom: 8,
+    minzoom: 13,
     'source-layer': 'petroleum_site',
     paint: {
       'fill-opacity': 0.3,
-      'fill-color': colour_oil,
+      'fill-color': pipeline_colour,
       'fill-outline-color': 'rgba(0, 0, 0, 1)',
     },
   },
@@ -104,6 +160,35 @@ const layers = [
         12, 2,
         14, 5
       ],
+    },
+  },
+  {
+    zorder: 288,
+    id: 'petroleum_substation_point',
+    type: 'circle',
+    filter: ['all', substation_visible_p, substation_point_visible_p],
+    source: 'openinframap',
+    'source-layer': 'petroleum_site_point',
+    minzoom: 5,
+    layout: {},
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'],
+        5, ["match",
+          substation,
+          ['transmission'], 2.5,
+          1
+        ],
+        15, ["match",
+          substation,
+          ['transmission'], 7,
+          5
+        ]
+      ],
+      'circle-color': pipeline_colour,
+      'circle-stroke-opacity': 1,
+      'circle-stroke-color': '#636363',
+      'circle-stroke-width': 0.5,
+      'circle-opacity': pipeline_opacity
     },
   },
   {
@@ -150,6 +235,21 @@ const layers = [
     layout: {
       'text-field': 'Well {name}',
       'text-font': font,
+      'text-anchor': 'top',
+      'text-offset': [0, 0.5],
+      'text-size': 10,
+    },
+    paint: text_paint,
+  },
+  {
+    zorder: 503,
+    id: 'petroleum_marker_label',
+    type: 'symbol',
+    source: 'openinframap',
+    'source-layer': 'petroleum_marker',
+    minzoom: 16.5,
+    layout: {
+      'text-field': '{ref}',
       'text-anchor': 'top',
       'text-offset': [0, 0.5],
       'text-size': 10,

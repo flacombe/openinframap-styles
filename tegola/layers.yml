@@ -56,7 +56,7 @@ field_sets:
       sql: tags -> 'ref'
   construction:
     - name: construction
-      sql: (tags -> 'construction:power') IS NOT NULL
+      sql: (tags -> 'construction:power') IS NOT NULL OR (tags -> 'construction:telecom') IS NOT NULL OR (tags -> 'construction:pipeline') IS NOT NULL
   url:
     - name: url
       sql: osm_url(tags)
@@ -80,12 +80,56 @@ field_sets:
     - name: start_date
       sql: tags->'start_date'
 
+  support_structure:
+    - name: height
+      sql: tags -> 'height'
+    - name: material
+      sql: tags -> 'material'
+    - name: structure
+      sql: tags -> 'structure'
+    - name: design
+      sql: tags -> 'design'
+  support_topology:
+    - name: line_attachment
+      sql: tags -> 'line_attachment'
+    - name: line_management
+      sql: tags -> 'line_management'
+    - name: line_arrangement
+      sql: tags -> 'line_arrangement'
+  remote_control:
+    - name: remotely_controllable
+      sql: tags -> 'remotely_controllable'
+  telecom_medium:
+    - name: telecom:medium
+      sql: tags -> 'telecom:medium'
+  size:
+    - name: height
+      sql: tags -> 'height'
+    - name: width
+      sql: tags -> 'width'
+    - name: length
+      sql: tags -> 'length'
+    - name: diameter
+      sql: tags -> 'diameter'
+  utility:
+    - name: utility
+      sql: tags -> 'utility'
+  actuator:
+    - name: actuator
+      sql: tags->'actuator'
+    - name: handle
+      sql: tags->'handle'
+      
 layers:
   - name: power_line
+    map:
+      - openinframap
+      - gespot
     geometry_type: LineString
     field_sets: [geom, name, frequency, wiki, construction, start_date]
     id_field: osm_id
     fields:
+      - name: type
       - name: tunnel
       - name: location
       - name: line
@@ -110,9 +154,12 @@ layers:
     order_by: convert_voltage(voltage) ASC NULLS FIRST
 
   - name: power_tower
+    map:
+      - openinframap
+      - gespot
     geometry_type: Point
-    min_zoom: 13
-    field_sets: [geom, name, construction, url, start_date]
+    min_zoom: 10
+    field_sets: [geom, name, construction, url, start_date, support_structure, support_topology, remote_control]
     id_field: osm_id
     fields:
       - name: transition
@@ -123,21 +170,18 @@ layers:
         sql: tags -> 'transformer'
       - name: substation
         sql: tags -> 'substation'
-      - name: design
-        sql: tags-> 'design'
-      - name: line_attachment
-        sql: tags-> 'line_attachment'
-      - name: line_management
-        sql: tags-> 'line_management'
-      - name: line_arrangement
-        sql: tags-> 'line_arrangement'
+      - name: utility
+        sql: "'power'"
     from: osm_power_tower
     where: geometry && !BBOX!
 
   - name: power_substation
+    map:
+      - openinframap
+      - gespot
     geometry_type: Polygon
     min_zoom: 13
-    field_sets: [geom, name, frequency, voltages, construction, wiki, url, start_date]
+    field_sets: [geom, name, frequency, voltages, construction, wiki, url, start_date, remote_control]
     fields:
       - name: substation
     id_field: osm_id
@@ -146,9 +190,12 @@ layers:
     order_by: convert_voltage(voltage) ASC NULLS FIRST
 
   - name: power_substation_point
+    map:
+      - openinframap
+      - gespot
     geometry_type: Point
     min_zoom: 5
-    field_sets: [geom_centroid, area, name, frequency, voltages, construction, wiki, url, start_date]
+    field_sets: [geom_centroid, area, name, frequency, voltages, construction, wiki, url, start_date, remote_control]
     fields:
       - name: substation
     id_field: osm_id
@@ -305,33 +352,73 @@ layers:
       GROUP BY geom
 
   - name: telecoms_communication_line
+    map:
+      - openinframap
+      - gespot
     geometry_type: LineString
     id_field: osm_id
     min_zoom: 2
-    field_sets: [geom, name, start_date]
+    field_sets: [geom, name, start_date, telecom_medium, construction]
     fields:
+      - name: ref
+        sql: tags -> 'ref'
+      - name: capacity
+        sql: tags -> 'capacity'
       - name: location
-        sql: tags -> 'location'
     from: osm_telecom_cable
     where: >
-      tags -> 'construction:power' IS NULL AND
       geometry && !BBOX!
       AND ST_Length(geometry) > !PIXEL_WIDTH! / 4
 
-  - name: telecoms_data_center
+  - name: telecoms_sites
     geometry_type: Polygon
     min_zoom: 10
     id_field: osm_id
-    field_sets: [geom, name, wiki, start_date]
-    from: osm_telecom_building
+    field_sets: [geom, name, wiki, start_date, telecom_medium]
+    fields:
+      - name: ref
+      - name: telecom
+        sql: type
+      - name: ref:FR:ARCEP
+        sql: tags -> 'ref:FR:ARCEP'
+      - name: ref:FR:PTT
+        sql: tags -> 'ref:FR:PTT'
+      - name: ref:FR:Orange
+        sql: tags -> 'ref:FR:Orange'
+      - name: ref:FR:SFR
+        sql: tags -> 'ref:FR:SFR'
+    from: osm_telecom_sites
+    where: geometry && !BBOX!
+
+  - name: telecoms_sites_points
+    geometry_type: Point
+    min_zoom: 8
+    id_field: osm_id
+    field_sets: [geom_centroid, area, name, wiki, telecom_medium]
+    fields:
+      - name: ref
+      - name: telecom
+        sql: type
+      - name: ref:FR:ARCEP
+        sql: tags -> 'ref:FR:ARCEP'
+      - name: ref:FR:PTT
+        sql: tags -> 'ref:FR:PTT'
+      - name: ref:FR:Orange
+        sql: tags -> 'ref:FR:Orange'
+      - name: ref:FR:SFR
+        sql: tags -> 'ref:FR:SFR'
+    from: osm_telecom_sites
     where: geometry && !BBOX!
 
   - name: telecoms_mast
+    map:
+      - openinframap
+      - gespot
     geometry_type: Point
     min_zoom: 10
     id_field: osm_id
     field_sets: [geom_centroid, name, wiki, start_date]
-    from: osm_mast
+    from: osm_telecom_towers
     where: >
       (tags -> 'mast:type' IN ('communication', 'communications', 'broadcast')
        OR tags -> 'tower:type' IN ('communication', 'radio', 'antenna'))
@@ -366,6 +453,21 @@ layers:
       AND geometry && !BBOX!
       AND ST_Length(geometry) > !PIXEL_WIDTH! / 4
 
+  - name: petroleum_marker
+    geometry_type: Point
+    min_zoom: 15
+    id_field: osm_id
+    field_sets: [geom, name, wiki, utility]
+    fields:
+      - name: location
+        sql: tags -> 'location'
+      - name: type
+      - name: colour
+    from: osm_marker
+    where: >
+      utility IN ('gas', 'oil')
+      AND geometry && !BBOX!
+
   - name: petroleum_well
     geometry_type: Point
     min_zoom: 10
@@ -376,13 +478,74 @@ layers:
 
   - name: petroleum_site
     geometry_type: Polygon
-    min_zoom: 8
+    min_zoom: 13
     id_field: osm_id
-    field_sets: [geom, name, start_date]
+    field_sets: [geom, name, start_date, construction, wiki, utility]
+    fields:
+      - name: substation
+        sql: tags -> 'substation'
+      - name: substance
+        sql: tags -> 'substance'
     from: osm_petroleum_site
-    where: geometry && !BBOX!
+    where: >
+      COALESCE(tags->'substance') IN ('natural_gas', 'gas', 'oil', 'fuel', 'cng', 'lng', 'hydrocarbons')
+      AND geometry && !BBOX!
 
-  - name: water_pipeline
+  - name: petroleum_site_point
+    geometry_type: Point
+    min_zoom: 5
+    field_sets: [geom_centroid, area, name, construction, wiki, utility]
+    fields:
+      - name: substation
+        sql: tags -> 'substation'
+      - name: substance
+        sql: tags -> 'substance'
+    id_field: osm_id
+    from: osm_petroleum_site
+    where: >
+      COALESCE(tags->'substance') IN ('natural_gas', 'gas', 'oil', 'fuel', 'cng', 'lng', 'hydrocarbons')
+      AND geometry && !BBOX!
+
+  - name: pipeline_gear
+    geometry_type: Point
+    min_zoom: 8
+    field_sets: [geom, name, actuator]
+    fields:
+      - name: type
+      - name: valve
+        sql: tags -> 'valve'
+    id_field: osm_id
+    from: osm_pipeline_gear
+    where: >
+      geometry && !BBOX!
+
+  - name: duct_inlet
+    geometry_type: Point
+    min_zoom: 12
+    field_sets: [geom, name, size, actuator]
+    fields:
+      - name: type
+      - name: valve
+        sql: tags->'valve'
+    id_field: osm_id
+    from: osm_inlets
+    where: >
+      geometry && !BBOX!
+
+  - name: duct_outlet
+    geometry_type: Point
+    min_zoom: 12
+    field_sets: [geom, name, size, actuator]
+    fields:
+      - name: type
+      - name: valve
+        sql: tags->'valve'
+    id_field: osm_id
+    from: osm_outlets
+    where: >
+      geometry && !BBOX!
+
+  - name: water_ways
     geometry_type: LineString
     min_zoom: 3
     id_field: osm_id
@@ -392,6 +555,8 @@ layers:
         sql: tags -> 'location'
       - name: substance
       - name: type
+      - name: tunnel
+        sql: tunnel
       - name: usage
         sql: tags -> 'usage'
       - name: diameter
@@ -400,7 +565,51 @@ layers:
         sql: tags -> 'start_date'
     from: osm_pipeline
     where: >
-      COALESCE(substance, type) IN (
-        'water', 'hot_water', 'rainwater', 'wastewater', 'sewage',
-        'waterwaste', 'steam'
-        ) AND geometry && !BBOX! AND ST_Length(geometry) > !PIXEL_WIDTH! / 4
+      geometry && !BBOX! AND ST_Length(geometry) > !PIXEL_WIDTH! / 4
+
+  - name: water_bodies
+    geometry_type: Polygon
+    id_field: osm_id
+    field_sets: [geom, name]
+    from: osm_waterbodies
+    where: > 
+      geometry && !BBOX!
+
+  - name: water_obstacles_poly
+    geometry_type: Polygon
+    min_zoom: 10
+    id_field: osm_id
+    field_sets: [geom, name]
+    fields:
+      - name: type
+    from: osm_waterways_obstacles
+    where: > 
+      geometry && !BBOX! AND
+      St_GeometryType(geometry)='ST_Polygon'
+
+  - name: water_obstacles_line
+    geometry_type: LineString
+    min_zoom: 10
+    id_field: osm_id
+    field_sets: [geom, name]
+    fields:
+      - name: type
+      - name: operator
+    from: osm_waterways_obstacles
+    where: > 
+      geometry && !BBOX! AND
+      St_GeometryType(geometry)='ST_LineString' AND 
+      ST_Length(geometry) > !PIXEL_WIDTH! / 4
+
+  - name: utility_support
+    map: 
+      - gespot
+    geometry_type: Point
+    min_zoom: 10
+    id_field: osm_id
+    field_sets: [geom, name, utility, construction, support_structure, support_topology]
+    fields:
+      - name: type
+      - name: transition
+    from: osm_utility_support
+    where: geometry && !BBOX!

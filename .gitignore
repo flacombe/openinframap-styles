@@ -4,3 +4,6 @@ mapping.json
 config.toml
 __pycache__
 .mypy_cache
+
+web/node_modules/
+.DS_Store

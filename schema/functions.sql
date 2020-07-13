@@ -1,12 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS intarray;
 CREATE EXTENSION IF NOT EXISTS hstore;
 
--- Drop all views here so that imposm3 can swap tables around
-DROP VIEW IF EXISTS substation;
-DROP VIEW IF EXISTS power_plant;
-DROP MATERIALIZED VIEW IF EXISTS power_substation_relation;
-DROP MATERIALIZED VIEW IF EXISTS power_plant_relation;
-
 -- Convert a power value into a numeric value in watts
 CREATE OR REPLACE FUNCTION convert_power(value TEXT) RETURNS NUMERIC
 PARALLEL SAFE
@@ -245,6 +239,20 @@ create or replace function osm_url (tags HSTORE)
     returns null on null input AS $$
 SELECT COALESCE(tags -> 'website', tags -> 'contact:website', tags -> 'url');
 $$ LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION osm_primitive_id(osm_id BIGINT, geom geometry) RETURNS varchar LANGUAGE plpgsql
+AS $$
+DECLARE
+BEGIN
+  IF osm_id < 0 THEN
+    RETURN CONCAT('relation/', -osm_id);
+  ELSIF St_GeometryType(geom)='ST_Point' THEN 
+    RETURN CONCAT('node/', osm_id);
+  ELSE
+    RETURN CONCAT('way/', osm_id);
+  END IF;
+END
+$$;
 
 
 -- Generate the outline of a distributed power plant

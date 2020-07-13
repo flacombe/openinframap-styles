@@ -23,6 +23,7 @@ case $command in
 
     # Views cleanup
     psql -d $DB_URL -f ./schema/functions.sql
+    psql -d $DB_URL -f ./schema/views_clean.sql
 
     # Imposm3 import
     /opt/imposm3/imposm3 import -connection $DB_URL -config /opt/imposm3/imposm3.conf -deployproduction -read /data/files/imposm3/osm.pbf -write -optimize -overwritecache -diff

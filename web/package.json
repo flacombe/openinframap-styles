@@ -1,5 +1,5 @@
 {
-  "name": "openinframap-web",
+  "name": "openinframap-ircom-web",
   "version": "1.0.0",
   "description": "",
   "main": "webpack.common.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openinframap/web.git"
+    "url": "git+https://github.com/flacombe/openinframap.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/openinframap/web/issues"
+    "url": "https://github.com/openinframap/openinframap/issues"
   },
-  "homepage": "https://github.com/openinframap/web#readme",
+  "homepage": "https://github.com/flacombe/openinframap/tree/master/web#readme",
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",

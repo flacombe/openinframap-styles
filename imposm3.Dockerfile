@@ -32,7 +32,7 @@ RUN curl -L https://github.com/omniscale/imposm3/releases/download/v${IMPOSM3_VE
     && tar -xvf imposm3.tar.gz --strip 1 \
     && rm -f imposm3.tar.gz
 
-COPY --chown=osm:osm ./imposm3/docker-entrypoint.sh ./imposm3/imposm3.conf ./imposm3/clean-expire.sh ./imposm3/crontab ./
+COPY --chown=osm:osm ./imposm3/docker-entrypoint.sh ./imposm3/imposm3.conf ./imposm3/limit.geojson ./imposm3/clean-expire.sh ./imposm3/crontab ./
 COPY --chown=osm:osm ./schema ./schema
 COPY --chown=osm:osm --from=builder /opt/mapping.json .
 

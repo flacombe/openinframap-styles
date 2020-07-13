@@ -45,22 +45,99 @@ which generates the Tegola config, from the `tegola.yml` and `layers.yml` files:
 
 ### Services
 
-Imposm runs as a service with the `-expiretiles-dir` option:
+Docker images includes all it needs to run services described below.
 
-	/usr/local/bin/imposm run -config /home/osm/imposm.json -expiretiles-dir /home/osm/imposm-expire
+Create a 10001 GID group that will own every directory mounted in docker for data persistance.
+```
+groupadd --gid 10001 -r osm_docker
+```
 
-The low-zoom layers are seeded daily with:
+## Setup
+Follow OSM guidelines at https://wiki.openstreetmap.org/wiki/Debian/Stretch/FR:Installation
 
-	/usr/local/bin/tegola cache seed --bounds="-180,-85.0511,180,85.0511" --min-zoom 2 --max-zoom 6 --overwrite --config /home/osm/styles/tegola/config.toml
+### Filesystem
 
-Invalidated tiles are removed every minute:
+Create required directories:
+```
+mkdir -p /data/files/imposm3
+```
 
-	/usr/bin/python3 /home/osm/styles/tegola/expire.py /home/osm/imposm-expire
+### Create osm database
 
-Materialised views are updated every 10 minutes with:
+Postgresql can run from the camp2camp postgis image:
+```
+docker network create -d bridge oim-internal
+docker run -d --rm --name pgsqldb --network=oim-internal -p 5432:5432 -e POSTGRES_PASSWORD=pgpassword -v /data/pgdocker:/var/lib/postgresql/data camptocamp/postgres:13-postgis-3
+```
 
-	/usr/bin/psql -h 10.43.18.68 osm < /home/osm/styles/refresh_matviews.sql  > /dev/null
+Connection with psql is done on host with:
+```
+docker exec -it 80ed0984a663 psql -d osm -U postgres
+```
+or
+```
+psql -h localhost -p 5432 -U postgres -d osm
+```
 
-Old diff files are removed periodically with:
+Then, with postgres user:
 
-	/usr/bin/find /home/osm/imposm_diff -type f -mtime +14 -exec rm {} \; > /dev/null
+```sh
+createuser osm
+psql -U postgres -c "ALTER USER osm WITH PASSWORD '#votremdp#';"
+
+createdb -E UTF8 -O osm
+psql -U postgres -c "CREATE EXTENSION postgis;" 
+```
+
+In case of heavy structure changes, it is preferable to destroy the existing database and recreate it as to avoid any issue during the importing process
+
+#### SQL functions
+
+As osm user:
+
+```sh
+psql -f schema/functions.sql -d osm
+```
+
+### Build
+
+Imposm3 docker is built with simple:
+```
+docker build --build-arg IMPOSM3_VERSION=0.11.0 -f imposm3.Dockerfile -t oim/imposm:latest .
+```
+
+Several tegola servers can be built this way, adjust the TEGOLA_CONFIG directory path to change configuration:
+```
+docker build --build-arg TEGOLA_CONFIG=tegola -f tegola.Dockerfile -t oim/tegola:latest .
+```
+
+### Load OSM Data
+First of all, choose the file corresponding to the area you want to load https://download.geofabrik.de/
+
+Loading is done with `import` command of imposm3 docker image as follows:
+```
+docker run -it -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -e DB_URL=postgres://user:password@pgsqldb:5432/osm -e OSM_FILE=https://download.geofabrik.de/europe/france-latest.osm.pbf oim/imposm3:latest import
+```
+
+`import` command directly fallbacks to run state once completed, you won't have to wait to restart the docker.
+
+## Running
+
+Running includes a few tasks that are mostly included in docker images
+* Keeping data and views up to date is done by imposm3 docker
+* Producing and cleaning up expired tiles log is also done by imposm3 docker
+* Consuming expired tiles log is done by tegola docker
+
+### Docker
+
+Tegola instance server could be started with following docker run:
+```
+docker run -d --rm -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -p 8083:8081 -e DB_HOST=pgsqldb -e DB_PORT=5432 -e DB_DATABASE=osm -e DB_USER=user -e DB_PWD=password oim/tegola:latest
+```
+
+### Continuous OSM data update
+
+With Docker
+```
+docker run -d --rm -v /data/files/imposm3:/data/files/imposm3 --network=oim-internal -e DB_URL=postgres://user:password@pgsqldb:5432/osm oim/imposm3:latest run
+```
