@@ -13,6 +13,8 @@ if len(sys.argv) != 2:
 expire_dir = sys.argv[1]
 
 pathlist = Path(expire_dir).glob("**/*.tiles")
+# TODO refresh views prior to invalidate tiles
+
 for path in pathlist:
     file_time = os.path.getmtime(path)
     if (time.time() - file_time) <= 750:
