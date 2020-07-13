@@ -1,4 +1,12 @@
-from funcs import table, type_col
+from funcs import (
+    table,
+    relation_tables,
+    generalized_table,
+    str_col,
+    int_col,
+    bool_col,
+    type_col,
+)
 
 
 table(
@@ -8,30 +16,38 @@ table(
         "construction:communication": ["line", "cable"],
     },
     "linestring",
+    columns=[
+        str_col("location"),
+        str_col("operator"),
+        type_col
+    ],
 )
 
 table(
-    "telecom_building",
+    "telecom_sites",
     {
-        "building": ["data_center", "data_centre", "telephone_exchange"],
-        "telecom": ["data_center", "data_centre", "central_office", "exchange"],
-        "office": ["telecommunication"],
-        "man_made": ["telephone_office"],
+        "telecom": ["data_center", "data_centre", "exchange", "connection_point", "distribution_point"]
     },
     ["points", "polygons"],
-    columns=[type_col],
+    columns=[
+        str_col("operator"),
+        str_col("telecom:medium"),
+        str_col("connection_point"),
+        str_col("ref"),
+        str_col("ref:FR:ARCEP"),
+        str_col("ref:FR:Orange"),
+        str_col("ref:FR:PTT"),
+        str_col("ref:FR:SFR"),
+        type_col
+    ],
 )
 
 table(
-    "telecom_location",
-    {"telecom": ["connection_point", "distribution_point"]},
-    ["points", "polygons"],
-    columns=[type_col],
-)
-
-table(
-    "mast",
+    "telecom_antennas",
     {"man_made": ["mast", "tower", "communications_tower"]},
     "point",
-    columns=[type_col],
+    columns=[
+        str_col("ref:FR:ANFR"),
+        type_col
+    ],
 )

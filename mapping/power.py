@@ -12,19 +12,23 @@ from funcs import (
 table(
     "power_line",
     {
-        "power": ["line", "minor_line", "cable", "minor_cable"],
-        "construction:power": ["line", "minor_line", "cable", "minor_cable"],
+        "power": ["line", "minor_line", "cable"],
+        "construction:power": ["line", "minor_line", "cable"],
     },
     "linestring",
     columns=[
         type_col,
         str_col("location"),
         str_col("line"),
+        str_col("operator"),
         str_col("voltage"),
         str_col("frequency"),
+        int_col("cables"),
+        str_col("wires"),
         int_col("circuits"),
         str_col("construction:power", "construction"),
         bool_col("tunnel"),
+        str_col("ref"),
     ],
 )
 
@@ -47,12 +51,23 @@ generalized_table(
 table(
     "power_tower",
     {
-        "power": ["tower", "pole", "portal"],
-        "construction:power": ["tower", "pole", "portal"],
+        "power": ["tower", "pole", "portal", "insulator", "terminal"],
+        "construction:power": ["tower", "pole", "portal", "insulator", "terminal"],
     },
     ["points", "linestrings"],
     columns=[
         type_col,
+        str_col("material"),
+        str_col("structure"),
+        str_col("height"),
+        str_col("colour"),
+        str_col("operator"),
+        str_col("line_attachment"),
+        str_col("line_management"),
+        str_col("remotely_controllable"),
+        str_col("ref"),
+        str_col("ref:FR:gdo"),
+        str_col("ref:FR:RTE"),
         bool_col("location:transition", "transition"),
         str_col("construction:power", "construction"),
     ],
@@ -68,10 +83,14 @@ table(
     columns=[
         type_col,
         str_col("substation"),
+        str_col("location"),
+        str_col("operator"),
         str_col("voltage"),
-        str_col("frequency"),
+        str_col("ref"),
+        str_col("ref:FR:gdo"),
+        str_col("ref:FR:RTE"),
+        str_col("remotely_controllable"),
         str_col("construction:power", "construction"),
-        bool_col("tunnel"),
     ],
 )
 
@@ -84,13 +103,16 @@ relation_tables(
     relation_types=["site"],
     relation_columns=[
         str_col("substation"),
+        str_col("location"),
+        str_col("operator"),
         str_col("voltage"),
-        str_col("frequency"),
+        str_col("ref"),
+        str_col("ref:FR:gdo"),
+        str_col("ref:FR:RTE"),
+        str_col("remotely_controllable"),
         str_col("construction:power", "construction"),
-        bool_col("tunnel"),
     ],
 )
-
 
 table(
     "power_switchgear",
@@ -99,13 +121,24 @@ table(
             "switch",
             "transformer",
             "compensator",
-            "insulator",
-            "terminal",
             "converter",
         ]
     },
     ["points", "polygons"],
-    columns=[str_col("voltage"), type_col],
+    columns=[
+        str_col("voltage"),
+        str_col("voltage:primary"),
+        str_col("voltage:secondary"),
+        str_col("voltage:tertiary"),
+        str_col("phases"),
+        str_col("frequency"),
+        str_col("switch"),
+        str_col("transformer"),
+        str_col("ref"),
+        str_col("ref:FR:gdo"),
+        str_col("ref:FR:RTE"),
+        type_col
+    ],
 )
 
 
@@ -141,5 +174,9 @@ table(
         str_col("generator:type", "type"),
         str_col("generator:output", "output"),
         str_col("construction_power", "construction"),
+        str_col("frequency"),
+        str_col("voltage"),
+        str_col("phases"),
+        str_col("operator"),
     ],
 )

@@ -2,9 +2,13 @@ from funcs import table, type_col, str_col
 
 table(
     "marker",
-    {"pipeline": ["marker"], "power": ["marker"], "marker": ["__any__"]},
+    {"marker": ["__any__"]},
     "point",
-    columns=[type_col],
+    columns=[
+        str_col("utility"),
+        str_col("colour"),
+        type_col
+    ],
 )
 
 table(
@@ -13,7 +17,6 @@ table(
     "linestring",
     columns=[
         str_col("substance"),
-        str_col("type"),
         str_col("construction:man_made", "construction"),
     ],
 )
@@ -32,17 +35,26 @@ table(
             "natural_gas",
             "wellsite",
             "well_cluster",
-        ]
+        ],
+        "pipeline":["substation"]
     },
     "polygon",
-    columns=[type_col],
+    columns=[
+        str_col("operator"),
+        str_col("utility"),
+        str_col("ref"),
+        type_col
+    ],
 )
 
 table(
-    "pipeline_feature",
-    {"pipeline": ["valve", "substation", "flare"]},
+    "pipeline_gear",
+    {"pipeline": ["valve", "flare", "surge_tank"]},
     "point",
-    columns=[type_col],
+    columns=[
+        str_col("valve"),
+        type_col
+    ],
 )
 
 table(
