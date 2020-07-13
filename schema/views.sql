@@ -36,6 +36,11 @@ CREATE INDEX power_plant_relation_geom ON power_plant_relation USING GIST (geome
 
 ANALYZE power_plant_relation;
 
+ALTER TABLE osm_power_line ADD COLUMN geometry_4326 geometry;
+UPDATE osm_power_line SET voltage_max=convert_voltage(voltage), geometry_4326=ST_Transform(geometry, 4326);
+UPDATE osm_power_line SET tags=(tags::hstore - 'circuits'::text) where tags->'circuits' !~ '^ *[-+]?[0-9]*([.][0-9]+)?[0-9]*(([eE][-+]?)[0-9]+)? *$';
+CREATE INDEX ON osm_power_line USING gist(geometry_4326);
+
 CREATE OR REPLACE VIEW power_plant AS
     SELECT osm_id, geometry, tags -> 'name' AS name, output, source, tags, construction
               FROM osm_power_plant
@@ -43,14 +48,53 @@ CREATE OR REPLACE VIEW power_plant AS
     SELECT osm_id, geometry, name, output, source, tags, construction
               FROM power_plant_relation;
 
+/* Projets enedis */
+CREATE MATERIALIZED VIEW pdm_boundary AS 
+  SELECT id, osm_id, type, name, admin_level, tags, geometry AS geom, ST_PointOnSurface(geometry)::GEOMETRY(Point, 3857) AS centre
+  FROM osm_pdm_boundary
+  WHERE admin_level IN (4, 6, 8);
+  CREATE INDEX ON pdm_boundary using gist(geom);
+  CREATE INDEX ON pdm_boundary using gist(centre);
+  CREATE INDEX ON pdm_boundary using btree(osm_id);
 
+CREATE MATERIALIZED VIEW pdm_project_poteaux AS 
+  SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry AS geom
+  FROM osm_power_tower 
+  WHERE type IN ('pole', 'tower') AND tags->'operator'='Enedis' AND St_geometryType(geometry)='ST_Point';
+
+CREATE VIEW pdm_project_poteaux_other AS 
+  SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry AS geom
+  FROM osm_power_tower 
+  WHERE type IN ('pole', 'tower') AND tags->'operator' IS NOT NULL AND tags->'operator'!='Enedis' AND St_geometryType(geometry)='ST_Point';
+
+CREATE VIEW pdm_project_poteaux_noop AS 
+  SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry AS geom
+  FROM osm_power_tower 
+  WHERE type IN ('pole', 'tower') AND tags->'operator' IS NULL AND St_geometryType(geometry)='ST_Point';
+
+  CREATE INDEX ON pdm_project_poteaux using gist(geom);
+  CREATE INDEX ON pdm_project_poteaux using btree(osm_id);
+
+CREATE MATERIALIZED VIEW pdm_project_substations AS 
+  SELECT osm_id, gid, name, hstore_to_json(tags) AS tags, ST_Centroid(geometry) AS geom
+  FROM (
+    SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, tags, geometry
+    FROM osm_power_substation
+    where tags->'operator'='Enedis' AND tags->'substation'='minor_distribution'
+    UNION SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, tags, geometry
+    FROM osm_power_tower where tags->'operator'='Enedis' AND (tags->'substation'='minor_distribution' OR tags->'substation'='minor_distribution')
+  ) data;
+
+CREATE INDEX ON pdm_project_substations using gist(geom);
+CREATE INDEX ON pdm_project_substations using btree(osm_id);
+
+/* OpenInfraMap views */
 CREATE OR REPLACE VIEW power_plant_relation_by_geom_type AS
     SELECT rel.osm_id, ST_Collect(mem.geometry) AS geometry,
         (rel.tags -> 'name') AS name, rel.output, rel.source, rel.tags, rel.construction
 	FROM osm_power_plant_relation AS rel, osm_power_plant_relation_member AS mem
 	WHERE mem.osm_id = rel.osm_id
 	GROUP BY rel.osm_id, ST_GeometryType(mem.geometry), rel.tags -> 'name', rel.output, rel.source, rel.tags, rel.construction;
-
 
 /* Dispatch power line query to the appropriate generalised table based on zoom. */
 CREATE OR REPLACE FUNCTION power_lines(zoom INT, search_geom geometry) RETURNS

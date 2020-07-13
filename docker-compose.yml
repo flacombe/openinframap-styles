@@ -1,0 +1,36 @@
+version : "3.9"
+
+services:
+  pgsqldb:
+    image: camptocamp/postgres:13-postgis-3
+    restart: always
+    networks:
+      - oim-internal
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+  
+  imposm:
+    image: oim/imposm3:ircom-1
+    networks:
+      - oim-internal
+    volumes:
+      - osm-data:/data/files/imposm3
+    command: update
+
+  tegola:
+    image: oim/tegola:ircom-1
+    networks:
+      - oim-internal
+      - oim-external
+    volumes:
+      osm-data:/data/files/imposm3
+
+volumes:
+  - db-data
+  - osm-data
+
+networks:
+  oim-internal
+  oim-external

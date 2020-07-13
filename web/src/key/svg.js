@@ -57,6 +57,23 @@ export function svgRect(colour, stroke = 'black', opacity = 1) {
   return svg('svg', rect, { height: height, width: width });
 }
 
+export function svgCircle(colour, stroke = 'black', opacity = 1, radius = 10) {
+  let shape = svg('circle', {
+    r: radius,
+    cx : radius,
+    cy : radius
+  });
+
+  setStyle(shape, {
+    fill: colour,
+    stroke: stroke,
+    'stroke-width': 1,
+    opacity: opacity,
+  });
+
+  return svg('svg', shape, {height: 2 * radius, width: 2 * radius});
+}
+
 export function svgRectFromLayer(layers, name) {
   let layer = getLayer(layers, name);
   let dasharray = '';
@@ -69,4 +86,17 @@ export function svgRectFromLayer(layers, name) {
     outline_color = layer['paint']['fill-outline-color'];
   }
   return svgRect(layer['paint']['fill-color'], outline_color, opacity);
+}
+
+export function svgCircleFromLayer(layers, name) {
+  let layer = getLayer(layers, name);
+  let opacity = 1;
+  let outline_color = '';
+  if (layer['paint']['circle-opacity']) {
+    opacity = layer['paint']['circle-opacity'];
+  }
+  if (layer['paint']['circle-stroke-color']) {
+    outline_color = layer['paint']['circle-stroke-color'];
+  }
+  return svgCircle(layer['paint']['circle-color'], outline_color, opacity, 7);
 }

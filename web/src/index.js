@@ -69,21 +69,17 @@ function init() {
   layer_switcher.setInitialVisibility(map_style);
 
   if (DEV) {
-    map_style['sprite'] = 'http://localhost:8080/style/sprite';
-    // map_style['sources']['openinframap']['url'] = 'http://localhost:8081/capabilities/openinframap.json'
-    // map_style['sources']['solar_heatmap']['url'] = 'http://localhost:8081/capabilities/solar_heatmap.json'
+    map_style['sprite'] = 'http://map.infos-reseaux.com/style/sprite';
   }
 
   var map = new maplibregl.Map(url_hash.init({
     container: 'map',
     style: map_style,
     minZoom: 2,
-    maxZoom: 17.9,
-    center: [12, 26],
+    maxZoom: 20.9,
+    center: [2.727, 46.125],
+    zoom:4.9
   }));
-
-  map.dragRotate.disable();
-  map.touchZoomRotate.disableRotation();
 
   url_hash.enable(map);
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');

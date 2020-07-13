@@ -5,8 +5,7 @@ import {
   special_voltages,
   plant_types,
 } from '../style/style_oim_power.js';
-import comms_layers from '../style/style_oim_telecoms.js';
-import water_layers from '../style/style_oim_water.js';
+import {default as comms_layers, medium_scale} from '../style/style_oim_telecoms.js';
 import {
   default as petroleum_layers,
   colour_oil,
@@ -18,12 +17,14 @@ import {
   colour_unknown
 } from '../style/style_oim_petroleum.js';
 import {
+  default as water_layers,
+  usage_scale,
   colour_freshwater,
   colour_wastewater,
   colour_hotwater,
   colour_steam
 } from '../style/style_oim_water.js';
-import { svgLine, svgLineFromLayer, svgRectFromLayer } from './svg.js';
+import {svgLine, svgRect, svgCircle, svgLineFromLayer, svgRectFromLayer, svgCircleFromLayer} from './svg.js';
 import './key.css';
 
 const line_thickness = 6;
@@ -78,8 +79,8 @@ class KeyControl {
     } else {
       cont_style = this._container.getBoundingClientRect();
     }
-    let height = parseInt(map_style.height) - cont_style.top - 100 + 'px';
-    setStyle(this._pane, { 'max-height': height });
+    let height = parseInt(map_style.height) - cont_style.top - 160 + 'px';
+    setStyle(this._pane, {'max-height': height});
   }
 
   header() {
@@ -108,8 +109,10 @@ class KeyControl {
     mount(pane, this.telecomTable());
     pane.appendChild(el('h3', 'Petroleum'));
     mount(pane, this.petroleumTable());
-    pane.appendChild(el('h3', 'Water'));
-    mount(pane, this.waterTable());
+    pane.appendChild(el('h3', 'Water flows'));
+    mount(pane, this.waterUsageTable());
+    pane.appendChild(el('h3', 'Water infrastructure'));
+    mount(pane, this.waterGearTable());
     this._pane = pane;
 
     mount(this._container, pane);
@@ -193,11 +196,23 @@ class KeyControl {
   }
 
   telecomTable() {
-    let rows = [
-      ['Cable', svgLineFromLayer(comms_layers, 'telecoms_line')],
-      ['Tower/Mast', this.sprite('comms_tower')],
-      ['Datacenter/Exchange', svgRectFromLayer(comms_layers, 'telecoms_data_center')],
-    ];
+    let rows = [];
+    for (let row of medium_scale) {
+      let label = row[0];
+
+      if (label == null){
+        label = "Unknown";
+      }
+
+      rows.push([label.charAt(0).toUpperCase() + label.slice(1), svgRect(row[1])]);
+    }
+
+    rows.push(['Cable', svgLineFromLayer(comms_layers, 'telecoms_line')]);
+    rows.push(['Tower/Mast', this.sprite('comms_tower')]);
+    rows.push(['Exchange', svgCircle("#7A7A85", 'black', 1, 8)]);
+    rows.push(['Connection point', svgCircle("#7A7A85", 'black', 1, 4)]);
+    rows.push(['Datacenter', svgRectFromLayer(comms_layers, 'telecoms_sites')]);
+
     let table = list('table', Tr);
     table.update(rows);
     return table;
@@ -222,13 +237,31 @@ class KeyControl {
     return table;
   }
 
-  waterTable() {
-    let rows = [
-      ['Fresh Water', svgLine(colour_freshwater, line_thickness)],
-      ['Hot Water', svgLine(colour_hotwater, line_thickness)],
-      ['Steam', svgLine(colour_steam, line_thickness)],
-      ['Wastewater', svgLine(colour_wastewater, line_thickness)],
-    ];
+  waterUsageTable() {
+    let rows = [];
+    for (let row of usage_scale) {
+      let label = row[0];
+      if (label == null){
+        label = "Unknown";
+      }
+
+      rows.push([label.charAt(0).toUpperCase() + label.slice(1), svgLine(row[1], 4)]);
+    }
+
+    let table = list('table', Tr);
+    table.update(rows);
+    return table;
+  }
+
+  waterGearTable() {
+    let rows = [];
+
+    rows.push(['Reservoir', svgRectFromLayer(water_layers, 'water_bodies')]);
+    rows.push(['Obstacle', svgRectFromLayer(water_layers, 'water_obstacles_poly')]);
+    rows.push(['Valve', svgCircleFromLayer(water_layers, 'water_structure_gear')]);
+    rows.push(['Inlet', svgCircleFromLayer(water_layers, 'water_flow_inlet')]);
+    rows.push(['Outlet', svgCircleFromLayer(water_layers, 'water_flow_outlet')]);
+
     let table = list('table', Tr);
     table.update(rows);
     return table;
