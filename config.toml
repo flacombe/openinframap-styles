@@ -24,9 +24,14 @@ user = "osm"
     sql = "SELECT gid, ST_AsBinary(geometry) AS geom, tunnel, location, first_semi(frequency) AS frequency, tags -> 'name' AS name, line, tags -> 'ref' AS ref, char_length(tags -> 'ref') AS ref_len, voltages[1] AS voltage, voltages[2] AS voltage_2, voltages[3] AS voltage_3, circuits, tags -> 'operator' AS operator, construction != '' AS construction, tags -> 'wikidata' AS wikidata, tags -> 'wikipedia' AS wikipedia, osm_url(tags) AS url FROM power_lines(!ZOOM!, !BBOX!) ORDER BY convert_voltage(voltage) ASC NULLS FIRST"
 
     [[providers.layers]]
+    name = "power_line_warningareas"
+    geometry_type = "Polygon"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(dma_geometry) AS geom, voltage, voltage_level, tunnel, location, type, 'DMA' AS area_level FROM power_line_warningareas WHERE dma_geometry && !BBOX! AND !ZOOM! >= 12 UNION SELECT osm_id AS gid, ST_AsBinary(dlvr_geometry) AS geom, voltage, voltage_level, tunnel, location, type, 'DLVR' AS area_level FROM power_line_warningareas WHERE dlvr_geometry && !BBOX! AND !ZOOM! >= 12 UNION SELECT osm_id AS gid, ST_AsBinary(dlvs_geometry) AS geom, voltage, voltage_level, tunnel, location, type, 'DLVS' AS area_level FROM power_line_warningareas WHERE dlvs_geometry && !BBOX! AND !ZOOM! >= 12 UNION SELECT osm_id AS gid, ST_AsBinary(dli_geometry) AS geom, voltage, voltage_level, tunnel, location, type, 'DLI' AS area_level FROM power_line_warningareas WHERE dli_geometry && !BBOX! AND !ZOOM! >= 12 ORDER BY voltage ASC NULLS FIRST"
+
+    [[providers.layers]]
     name = "power_tower"
     geometry_type = "Point"
-    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, type, tags -> 'name' AS name, transition, tags -> 'ref' AS ref, tags -> 'operator' AS operator, tags -> 'switch' AS switch, tags -> 'line_attachment' AS line_attachment, tags -> 'line_management' AS line_management, tags -> 'remotely_controllable' AS remotely_controllable, tags->'ref:FR:RTE' AS \"ref:FR:RTE\", tags->'ref:FR:gdo' AS \"ref:FR:gdo\", (ST_GeometryType(geometry) = 'ST_Point') AS is_node, construction != '' AS construction FROM osm_power_tower WHERE geometry && !BBOX! AND !ZOOM! >= 13"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, type, tags -> 'name' AS name, transition, tags -> 'ref' AS ref, tags -> 'operator' AS operator, tags -> 'switch' AS switch, tags -> 'material' AS material, 'power' AS utility, tags -> 'line_attachment' AS line_attachment, tags -> 'line_management' AS line_management, tags -> 'height' AS height, tags -> 'remotely_controllable' AS remotely_controllable, tags->'ref:FR:RTE' AS \"ref:FR:RTE\", tags->'ref:FR:gdo' AS \"ref:FR:gdo\", (ST_GeometryType(geometry) = 'ST_Point') AS is_node, construction != '' AS construction FROM osm_power_tower WHERE geometry && !BBOX! AND !ZOOM! >= 10"
     
     [[providers.layers]]
     name = "power_substation"
@@ -85,17 +90,17 @@ user = "osm"
     [[providers.layers]]
     name = "telecoms_communication_line"
     geometry_type = "LineString"
-    sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Simplify(geometry, ZRes(!ZOOM!) / 5, true)) AS geom, tags -> 'operator' AS operator, tags -> 'name' AS name, tags -> 'location' AS location FROM osm_telecom_cable WHERE tags -> 'construction:power' IS NULL AND geometry && !BBOX! AND 1 < !ZOOM! AND ST_Length(geometry) > ZRes(!ZOOM!) * 2"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Simplify(geometry, ZRes(!ZOOM!) / 5, true)) AS geom, tags -> 'ref' AS ref, tags -> 'operator' AS operator, tags -> 'name' AS name, tags -> 'capacity' AS capacity, tags -> 'location' AS location, tags->'telecom:medium' AS \"telecom:medium\", tags -> 'construction:telecom' IS NOT NULL AS construction FROM osm_telecom_cable WHERE geometry && !BBOX! AND 1 < !ZOOM! AND ST_Length(geometry) > ZRes(!ZOOM!) * 2"
 
     [[providers.layers]]
     geometry_type = "Polygon"
     name = "telecoms_sites"
-    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, name, ref, \"ref:FR:ARCEP\", \"ref:FR:PTT\", \"ref:FR:Orange\",\"ref:FR:SFR\", telecom, \"telecom:medium\" FROM osm_telecom_sites_polygon WHERE geometry && !BBOX! AND !ZOOM! >= 10"
-
+    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, operator, tags->'name' AS name, ref, tags->'ref:FR:ARCEP' AS \"ref:FR:ARCEP\", tags->'ref:FR:PTT' AS \"ref:FR:PTT\", tags->'ref:FR:Orange' AS \"ref:FR:Orange\", tags->'ref:FR:SFR' AS \"ref:FR:SFR\", type AS telecom, tags->'telecom:medium' AS \"telecom:medium\" FROM osm_telecom_sites WHERE geometry && !BBOX! AND !ZOOM! >= 5"
+    
     [[providers.layers]]
     geometry_type = "Point"
     name = "telecoms_sites_points"
-    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, TRUE AS is_node, 0 AS area, operator, name, ref, \"ref:FR:ARCEP\", \"ref:FR:PTT\", \"ref:FR:Orange\",\"ref:FR:SFR\", telecom, \"telecom:medium\" FROM osm_telecom_sites_points WHERE geometry && !BBOX! AND !ZOOM! >= 10 UNION ALL SELECT osm_id AS gid, ST_AsBinary(ST_Centroid(geometry)) AS geom, FALSE AS is_node, round(ST_Area(geometry)) AS area, operator, name, ref, \"ref:FR:ARCEP\", \"ref:FR:PTT\", \"ref:FR:Orange\",\"ref:FR:SFR\", telecom, \"telecom:medium\" FROM osm_telecom_sites_polygon WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Centroid(geometry)) AS geom, (ST_GeometryType(geometry) = 'ST_Point') AS is_node, round(ST_Area(geometry)) AS area, operator, tags->'name' AS name, ref, tags->'ref:FR:ARCEP' AS \"ref:FR:ARCEP\", tags->'ref:FR:PTT' AS \"ref:FR:PTT\", tags->'ref:FR:Orange' AS \"ref:FR:Orange\", tags->'ref:FR:SFR' AS \"ref:FR:SFR\", type AS telecom, tags->'telecom:medium' AS \"telecom:medium\" FROM osm_telecom_sites WHERE geometry && !BBOX! AND !ZOOM! >= 5"
 
     [[providers.layers]]
     name = "telecoms_mast"
@@ -120,7 +125,12 @@ user = "osm"
     [[providers.layers]]
     name = "water_ways"
     geometry_type = "LineString"
-    sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Simplify(geometry, ZRes(!ZOOM!) / 5, true)) AS geom, operator, name, waterway, tunnel, diameter, usage FROM osm_waterways WHERE geometry && !BBOX! AND !ZOOM! >= 3 AND ST_Length(geometry) > ZRes(!ZOOM!) * 2"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(ST_Simplify(geometry, ZRes(!ZOOM!) / 5, true)) AS geom, operator, name, type, tunnel, diameter, usage FROM osm_waterway WHERE geometry && !BBOX! AND !ZOOM! >= 3 AND ST_Length(geometry) > ZRes(!ZOOM!) * 2"
+
+    [[providers.layers]]
+    name = "utility_support"
+    geometry_type = "Point"
+    sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, type, transition, tags -> 'ref' AS ref, tags -> 'operator' AS operator, tags -> 'material' AS material, tags->'utility' AS utility, tags -> 'line_attachment' AS line_attachment, tags -> 'line_management' AS line_management, tags -> 'height' AS height, construction != '' AS construction FROM osm_utility_support WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
 [[maps]]
 name = "openinframap"
@@ -223,3 +233,46 @@ name = "openinframap"
     min_zoom = 3
     max_zoom = 17
     provider_layer = "postgis.water_ways"
+
+[[maps]]
+name = "gespot"
+
+    [[maps.layers]]
+    min_zoom = 10
+    max_zoom = 18
+    provider_layer = "postgis.power_tower"
+
+    [[maps.layers]]
+    min_zoom = 2
+    max_zoom = 18
+    provider_layer = "postgis.power_line"
+
+    [[maps.layers]]
+    min_zoom = 12
+    max_zoom = 18
+    provider_layer = "postgis.power_line_warningareas"
+ 
+    [[maps.layers]]
+    min_zoom = 13
+    max_zoom = 18
+    provider_layer = "postgis.power_substation"
+
+    [[maps.layers]]
+    min_zoom = 5
+    max_zoom = 18
+    provider_layer = "postgis.power_substation_point"
+    
+    [[maps.layers]]
+    min_zoom = 5
+    max_zoom = 18
+    provider_layer = "postgis.telecoms_communication_line"
+
+    [[maps.layers]]
+    min_zoom = 10
+    max_zoom = 18
+    provider_layer = "postgis.telecoms_mast"
+
+    [[maps.layers]]
+    min_zoom = 10
+    max_zoom = 18
+    provider_layer = "postgis.utility_support"

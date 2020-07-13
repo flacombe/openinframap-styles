@@ -108,9 +108,8 @@ And then do the initial import with Imposm3
 sudo mkdir /data/updates
 sudo chown osm:osm /data/updates
 sudo chmod 2774 /data/updates
-cd /data/updates
-/opt/imposm3/imposm3 import -cachedir . -config /opt/oim-styles/imposm3/imposm3.conf -mapping /opt/oim-styles/mapping.yml -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff
-cp /data/updates/last.state.txt /data/updates/state.txt
+cd /data/cache
+/opt/imposm3/imposm3 import -config /opt/oim-styles/imposm3/imposm3.conf -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff)
 ```
 
 Finally populate views of PgSQL database
@@ -137,6 +136,14 @@ A script is here to help :
 ```
 
 ## Running
+
+### Keeping view up to date
+
+Add a cron with the following
+
+```sh
+0 */6 * * * psql -d osm -f /opt/oim-styles/refresh_matviews.sql >/dev/null 2>&1
+```
 
 ### Manage tile server
 

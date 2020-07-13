@@ -4,7 +4,8 @@ from funcs import tables, generalized_tables
 import power  # noqa
 import telecoms  # noqa
 import petroleum  # noqa
-
+import water  # noqa
+import utility  # noqa
 
 data = {
     "areas": {"area_tags": ["building"]},
@@ -24,7 +25,6 @@ data = {
             "addr:*",
             "natural",
             "surface",
-            "waterway",
             "oneway",
             "service",
             "wall",

@@ -32,6 +32,43 @@ CREATE INDEX power_plant_relation_geom ON power_plant_relation USING GIST (geome
 
 ANALYZE power_plant_relation;
 
+ALTER TABLE osm_power_line ADD COLUMN geometry_4326 geometry;
+UPDATE osm_power_line SET voltage_max=convert_voltage(voltage), geometry_4326=ST_Transform(geometry, 4326);
+CREATE INDEX ON osm_power_line USING gist(geometry_4326);
+
+CREATE MATERIALIZED VIEW power_line_warningareas AS
+  SELECT pl.osm_id, pl.voltage, pl.tags->'location' AS location, pl.tags->'tunnel' AS tunnel, pl.type AS type, 'BT' AS voltage_level,
+    ST_Transform(ST_Buffer(geometry_4326::geography,0.3*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dma_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,0.3*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvr_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,3*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvs_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,50)::geometry,3857) AS dli_geometry
+  FROM osm_power_line pl WHERE geometry_4326 IS NOT NULL AND pl.voltage_max BETWEEN 0 AND 1000
+  UNION SELECT pl.osm_id, pl.voltage, pl.tags->'location' AS location, pl.tags->'tunnel' AS tunnel, pl.type AS type, 'HTA' AS voltage_level,
+    ST_Transform(ST_Buffer(geometry_4326::geography,2*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dma_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,4*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvr_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,5*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvs_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,50)::geometry,3857) AS dli_geometry
+  FROM osm_power_line pl WHERE geometry_4326 IS NOT NULL AND pl.voltage_max BETWEEN 1000 AND 50000
+  UNION SELECT pl.osm_id, pl.voltage, pl.tags->'location' AS location, pl.tags->'tunnel' AS tunnel, pl.type AS type, 'HTB' AS voltage_level,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(3+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dma_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(4+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvr_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(6+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvs_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,50)::geometry,3857) AS dli_geometry
+  FROM osm_power_line pl WHERE geometry_4326 IS NOT NULL AND pl.voltage_max BETWEEN 50000 AND 250000
+  UNION SELECT pl.osm_id, pl.voltage, pl.tags->'location' AS location, pl.tags->'tunnel' AS tunnel, pl.type AS type, 'HTB' AS voltage_level,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(4+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dma_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(5+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvr_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,(6+floor(pl.voltage_max/100000))*Coalesce((pl.tags->'circuits')::numeric,1))::geometry,3857) AS dlvs_geometry,
+    ST_Transform(ST_Buffer(geometry_4326::geography,50)::geometry,3857) AS dli_geometry
+  FROM osm_power_line pl WHERE geometry_4326 IS NOT NULL AND pl.voltage_max BETWEEN 250000 AND 500000;
+
+CREATE INDEX ON power_line_warningareas USING GIST (dma_geometry);
+CREATE INDEX ON power_line_warningareas USING GIST (dlvr_geometry);
+CREATE INDEX ON power_line_warningareas USING GIST (dlvs_geometry);
+CREATE INDEX ON power_line_warningareas USING GIST (dli_geometry);
+
+ANALYZE power_line_warningareas;
+
 CREATE OR REPLACE VIEW power_plant AS
     SELECT osm_id, geometry, tags -> 'name' AS name, output, source, tags, construction
               FROM osm_power_plant
