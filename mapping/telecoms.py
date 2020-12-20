@@ -12,8 +12,8 @@ from funcs import (
 table(
     "telecom_cable",
     {
-        "communication": ["line", "cable"],
-        "construction:communication": ["line", "cable"],
+        "telecom": ["line", "cable"],
+        "construction:telecom": ["line", "cable"],
     },
     "linestring",
     columns=[
@@ -31,13 +31,8 @@ table(
     ["points", "polygons"],
     columns=[
         str_col("operator"),
-        str_col("telecom:medium"),
         str_col("connection_point"),
         str_col("ref"),
-        str_col("ref:FR:ARCEP"),
-        str_col("ref:FR:Orange"),
-        str_col("ref:FR:PTT"),
-        str_col("ref:FR:SFR"),
         type_col
     ],
 )
@@ -47,7 +42,6 @@ table(
     {"man_made": ["mast", "tower", "communications_tower"]},
     "point",
     columns=[
-        str_col("ref:FR:ANFR"),
         type_col
     ],
 )
