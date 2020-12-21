@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=osm
 Group=osm
-WorkingDirectory=/data/cache
+WorkingDirectory=/data/files/imposm3/cache
 ExecStart=/opt/oim-styles/imposm3/update.sh
 Restart=on.failure
 
