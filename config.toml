@@ -132,16 +132,6 @@ user = "osm"
     geometry_type = "Point"
     sql = "SELECT osm_id AS gid, ST_AsBinary(geometry) AS geom, type, transition, tags -> 'ref' AS ref, tags -> 'operator' AS operator, tags -> 'material' AS material, tags->'utility' AS utility, tags -> 'line_attachment' AS line_attachment, tags -> 'line_management' AS line_management, tags -> 'height' AS height, construction != '' AS construction FROM osm_utility_support WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
-    [[providers.layers]]
-    name = "project_poles"
-    geometry_type = "Point"
-    sql = "SELECT osm_id AS osm_id, ST_AsBinary(geometry) AS geom, tags FROM osm_utility_support WHERE geometry && !BBOX! AND !ZOOM! >= 10"
-
-    [[providers.layers]]
-    name = "project_poles_compare_tiles_filtered"
-    geometry_type = "Point"
-    sql = "SELECT osm_id AS osm_id, ST_AsBinary(geometry) AS geom, tags FROM osm_utility_support WHERE geometry && !BBOX! AND !ZOOM! >= 10"
-
 [[maps]]
 name = "openinframap"
     [[maps.layers]]
@@ -286,16 +276,3 @@ name = "gespot"
     min_zoom = 10
     max_zoom = 18
     provider_layer = "postgis.utility_support"
-
-[[maps]]
-name = "enedis"
-
-    [[maps.layers]]
-    min_zoom = 10
-    max_zoom = 18
-    provider_layer = "postgis.project_poles"
-
-    [[maps.layers]]
-    min_zoom = 10
-    max_zoom = 18
-    provider_layer = "postgis.project_poles_compare_tiles_filtered"

@@ -2,7 +2,11 @@
 #Install & Run Tegola service
 #Dorian Galiana 10/12/2019
 echo "Installation du service tegola dans systemd"
-ln -s tegola.service /etc/systemd/system/tegola.service
+if [ ! -f /etc/systemd/system/tegola.service ]; then
+  echo "Copy tegola.service file towards /etc/systemd/system first"
+  exit 1;
+fi
+
 systemctl daemon-reload
 systemctl enable tegola.service
 systemctl start tegola.service

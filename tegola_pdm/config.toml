@@ -1,0 +1,34 @@
+[webserver]
+port = ":8082"
+hostname = "openstreetmap.doriangaliana.fr"
+cors_allowed_origin = "*"
+
+[cache]
+type="file"             # cache type
+basepath="/tmp/tegola_pdm"  # cache specific config
+
+[[providers]]
+max_connections = 20
+host = "localhost"
+name = "postgis"
+database = "osm"
+password = "osm"
+srid = 3857
+type = "postgis"
+port = 5432
+user = "osm"
+
+    [[providers.layers]]
+    name = "pdm_poteaux"
+    geometry_type = "Point"
+    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(geometry) AS geom, tags::text FROM pdm_project_poteaux WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+
+
+[[maps]]
+name = "public.pdm_project_poteaux"
+
+    [[maps.layers]]
+    min_zoom = 10
+    max_zoom = 15
+    provider_layer = "postgis.pdm_poteaux"
+    name = "public.pdm_project_poteaux"
