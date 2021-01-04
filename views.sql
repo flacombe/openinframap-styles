@@ -34,6 +34,7 @@ ANALYZE power_plant_relation;
 
 ALTER TABLE osm_power_line ADD COLUMN geometry_4326 geometry;
 UPDATE osm_power_line SET voltage_max=convert_voltage(voltage), geometry_4326=ST_Transform(geometry, 4326);
+UPDATE osm_power_line SET tags=(tags::hstore - 'circuits'::text) where tags->'circuits' !~ '^ *[-+]?[0-9]*([.][0-9]+)?[0-9]*(([eE][-+]?)[0-9]+)? *$';
 CREATE INDEX ON osm_power_line USING gist(geometry_4326);
 
 CREATE MATERIALIZED VIEW power_line_warningareas AS
@@ -77,7 +78,11 @@ CREATE OR REPLACE VIEW power_plant AS
               FROM power_plant_relation;
 
 /* Projets enedis */
-CREATE MATERIALIZED VIEW pdm_project_poteaux AS SELECT osm_id::text, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry FROM osm_power_tower where tags->'operator'='Enedis';
+CREATE MATERIALIZED VIEW pdm_project_poteaux AS 
+  SELECT osm_id::text, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry FROM osm_power_tower where type IN ('pole', 'tower') AND tags->'operator'='Enedis' AND St_geometryType(geometry)='ST_Point';
+CREATE MATERIALIZED VIEW pdm_project_substations AS SELECT osm_id, name, hstore_to_json(tags) AS tags, geometry FROM (
+  SELECT osm_id::text, tags->'name' AS name, tags, geometry FROM osm_power_substation where tags->'operator'='Enedis' AND tags->'substation'='minor_distribution'
+  UNION SELECT osm_id::text, tags->'name' AS name, tags, geometry FROM osm_power_tower where tags->'operator'='Enedis' AND (tags->'substation'='minor_distribution' OR tags->'transformer'='distribution')) data;
 
 /* Dispatch power line query to the appropriate generalised table based on zoom. */
 CREATE OR REPLACE FUNCTION power_lines(zoom INT, search_geom geometry) RETURNS

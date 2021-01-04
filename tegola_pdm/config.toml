@@ -23,6 +23,10 @@ user = "osm"
     geometry_type = "Point"
     sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(geometry) AS geom, tags::text FROM pdm_project_poteaux WHERE geometry && !BBOX! AND !ZOOM! >= 10"
 
+    [[providers.layers]]
+    name = "pdm_substations"
+    geometry_type = "Point"
+    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(ST_Centroid(geometry)) AS geom, tags::text FROM pdm_project_substations WHERE geometry && !BBOX! AND !ZOOM! >= 8"
 
 [[maps]]
 name = "public.pdm_project_poteaux"
@@ -32,3 +36,12 @@ name = "public.pdm_project_poteaux"
     max_zoom = 15
     provider_layer = "postgis.pdm_poteaux"
     name = "public.pdm_project_poteaux"
+
+[[maps]]
+name = "public.pdm_project_substations"
+
+    [[maps.layers]]
+    min_zoom = 10
+    max_zoom = 15
+    provider_layer = "postgis.pdm_substations"
+    name = "public.pdm_project_substations"
