@@ -30,13 +30,14 @@ if [ "${loadOsm}" -eq "1" ]; then
 fi
 
 # Refresh mapping.json
+sudo chmod 775 $scriptDir/../mapping.json
 python3 $scriptDir/../mapping/main.py > $scriptDir/../mapping.json
 
 # Nettoyage views
 (cd $scriptDir/.. && psql -d osm -f views_clean.sql)
 
 # Import initial
-(cd /data/cache && /opt/imposm3/imposm3 import -config /opt/oim-styles/imposm3/imposm3.conf -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff)
+(cd /data/files/imposm3/cache && /opt/imposm3/imposm3 import -config /opt/oim-styles/imposm3/imposm3.conf -deployproduction -read /data/files/france-latest.osm.pbf -write -optimize -overwritecache -diff)
 
 # Views
 (cd $scriptDir/.. && psql -d osm -f views.sql)

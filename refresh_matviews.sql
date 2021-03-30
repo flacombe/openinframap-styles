@@ -8,4 +8,7 @@ UPDATE osm_power_line SET tags=(tags::hstore - 'circuits'::text) where tags->'ci
 REFRESH MATERIALIZED VIEW power_line_warningareas;
 
 /* Projects enedis */
+REFRESH MATERIALIZED VIEW pdm_boundary;
+REFRESH MATERIALIZED VIEW pdm_boundary_subdivide;
 REFRESH MATERIALIZED VIEW pdm_project_poteaux;
+REFRESH MATERIALIZED VIEW pdm_project_substations;

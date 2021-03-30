@@ -21,27 +21,55 @@ user = "osm"
     [[providers.layers]]
     name = "pdm_poteaux"
     geometry_type = "Point"
-    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(geometry) AS geom, tags::text FROM pdm_project_poteaux WHERE geometry && !BBOX! AND !ZOOM! >= 10"
+    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(geom) AS geom, tags::text FROM pdm_project_poteaux WHERE geom && !BBOX! AND !ZOOM! >= 10"
+
+    [[providers.layers]]
+    name = "pdm_stats_poteaux"
+    geometry_type = "Point"
+    sql = "SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_poteaux' AND admin_level=4 AND geom && !BBOX! AND !ZOOM! <= 5 UNION SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_poteaux' AND admin_level=6 AND geom && !BBOX! AND !ZOOM! BETWEEN 5 AND 8 UNION SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_poteaux' AND admin_level=8 AND geom && !BBOX! AND !ZOOM! >= 8"
 
     [[providers.layers]]
     name = "pdm_substations"
     geometry_type = "Point"
-    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(ST_Centroid(geometry)) AS geom, tags::text FROM pdm_project_substations WHERE geometry && !BBOX! AND !ZOOM! >= 8"
+    sql = "SELECT osm_id::text AS osm_id, ST_AsBinary(ST_Centroid(geom)) AS geom, tags::text FROM pdm_project_substations WHERE geom && !BBOX! AND !ZOOM! >= 8"
+
+    [[providers.layers]]
+    name = "pdm_stats_substations"
+    geometry_type = "Point"
+    sql = "SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_substations' AND admin_level=4 AND geom && !BBOX! AND !ZOOM! <= 5 UNION SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_substations' AND admin_level=6 AND geom && !BBOX! AND !ZOOM! BETWEEN 5 AND 8 UNION SELECT project, boundary, name, admin_level, stats::text, nb, ST_AsBinary(geom) AS geom FROM pdm_boundary_tiles WHERE project='2021-01_substations' AND admin_level=8 AND geom && !BBOX! AND !ZOOM! >= 8"
 
 [[maps]]
-name = "public.pdm_project_poteaux"
+name = "pdm_project_poteaux"
 
     [[maps.layers]]
     min_zoom = 10
     max_zoom = 15
     provider_layer = "postgis.pdm_poteaux"
-    name = "public.pdm_project_poteaux"
+    name = "pdm_project_poteaux"
 
 [[maps]]
-name = "public.pdm_project_substations"
+name = "pdm_stats_poteaux"
+
+    [[maps.layers]]
+    min_zoom = 2
+    max_zoom = 15
+    provider_layer = "postgis.pdm_stats_poteaux"
+    name = "pdm_stats_poteaux"
+
+[[maps]]
+name = "pdm_project_substations"
 
     [[maps.layers]]
     min_zoom = 10
     max_zoom = 15
     provider_layer = "postgis.pdm_substations"
-    name = "public.pdm_project_substations"
+    name = "pdm_project_substations"
+
+[[maps]]
+name = "pdm_stats_substations"
+
+    [[maps.layers]]
+    min_zoom = 2
+    max_zoom = 15
+    provider_layer = "postgis.pdm_stats_substations"
+    name = "pdm_stats_substations"
