@@ -15,17 +15,17 @@ expire_dir = sys.argv[1]
 pathlist = Path(expire_dir).glob("**/*.tiles")
 for path in pathlist:
     file_time = os.path.getmtime(path)
-    if (time.time() - file_time) <= 610:
+    if (time.time() - file_time) <= 750:
         print("Handling expire for", path)
         subprocess.run(
             [
-                "tegola",
+                "/opt/tegola",
                 "cache",
                 "purge",
                 "tile-list",
                 path,
                 "--config",
-                "/home/osm/styles/tegola/config.toml",
+                "/opt/tegola_config/config.toml",
                 "--max-zoom",
                 "17",
                 "--min-zoom",
