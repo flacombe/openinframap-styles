@@ -62,6 +62,16 @@ CREATE MATERIALIZED VIEW pdm_project_poteaux AS
   FROM osm_power_tower 
   WHERE type IN ('pole', 'tower') AND tags->'operator'='Enedis' AND St_geometryType(geometry)='ST_Point';
 
+CREATE VIEW pdm_project_poteaux_other AS 
+  SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry AS geom
+  FROM osm_power_tower 
+  WHERE type IN ('pole', 'tower') AND tags->'operator' IS NOT NULL AND tags->'operator'!='Enedis' AND St_geometryType(geometry)='ST_Point';
+
+CREATE VIEW pdm_project_poteaux_noop AS 
+  SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, hstore_to_json(tags) AS tags, geometry AS geom
+  FROM osm_power_tower 
+  WHERE type IN ('pole', 'tower') AND tags->'operator' IS NULL AND St_geometryType(geometry)='ST_Point';
+
   CREATE INDEX ON pdm_project_poteaux using gist(geom);
   CREATE INDEX ON pdm_project_poteaux using btree(osm_id);
 

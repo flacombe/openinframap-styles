@@ -7,4 +7,6 @@ DROP MATERIALIZED VIEW IF EXISTS power_plant_relation;
 /* Projects enedis */
 DROP MATERIALIZED VIEW pdm_boundary CASCADE;
 DROP MATERIALIZED VIEW pdm_project_poteaux;
+DROP VIEW pdm_project_poteaux_other;
+DROP VIEW pdm_project_poteaux_noop;
 DROP MATERIALIZED VIEW pdm_project_substations;

@@ -35,10 +35,10 @@ layers:
     geometry_type: Point
     min_zoom: 7
     max_zoom: 15
-    field_sets: [geomt, osm_id, tags_hstore]
-    id_field: osm_id
-    from: osm_power_tower
-    where: tags->'operator' IS NOT NULL AND tags->'operator'!='Enedis' AND geometry && !BBOX!
+    field_sets: [geom, osm_id, tags]
+    id_field: gid
+    from: pdm_project_poteaux_other
+    where: geom && !BBOX!
 
   - name: pdm_project_poteaux_operator
     map:
@@ -46,10 +46,10 @@ layers:
     geometry_type: Point
     min_zoom: 7
     max_zoom: 15
-    field_sets: [geomt, osm_id, tags_hstore]
-    id_field: osm_id
-    from: osm_power_tower
-    where: tags->'operator' IS NULL AND geometry && !BBOX!
+    field_sets: [geom, osm_id, tags]
+    id_field: gid
+    from: pdm_project_poteaux_noop
+    where: geom && !BBOX!
 
   - name: pdm_stats_poteaux
     map:

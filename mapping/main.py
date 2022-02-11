@@ -7,6 +7,7 @@ import telecoms  # noqa
 import petroleum  # noqa
 import water  # noqa
 import utility  # noqa
+import emergency  # noqa
 
 data = {
     "areas": {"area_tags": ["building", "waterway"]},
@@ -20,7 +21,6 @@ data = {
             "tiger:*",
             "landuse",
             "highway",
-            "amenity",
             "office",
             "shop",
             "addr:*",
