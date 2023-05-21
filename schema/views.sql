@@ -82,7 +82,7 @@ CREATE MATERIALIZED VIEW pdm_project_substations AS
     FROM osm_power_substation
     where tags->'operator'='Enedis' AND tags->'substation'='minor_distribution'
     UNION SELECT osm_primitive_id(osm_id, geometry) AS osm_id, osm_id AS gid, tags->'name' AS name, tags, geometry
-    FROM osm_power_tower where tags->'operator'='Enedis' AND (tags->'substation'='minor_distribution' OR tags->'transformer'='distribution')
+    FROM osm_power_tower where tags->'operator'='Enedis' AND (tags->'substation'='minor_distribution' OR tags->'substation'='minor_distribution')
   ) data;
 
 CREATE INDEX ON pdm_project_substations using gist(geom);
