@@ -46,12 +46,13 @@ function init() {
   })
 
   const layers = {
-    Power: 'power_',
-    'Solar Generation': 'heatmap_',
-    Telecoms: 'telecoms_',
+    'Electricité': 'power_',
+    'Production PV': 'heatmap_',
+    'Télécoms': 'telecoms_',
     'Oil & Gas': 'petroleum_',
-    Water: 'water_',
-    Labels: 'place_'
+    'Hydro artificiel': 'water_',
+    'Hydro naturel': 'waternatural_',
+    'Lieux': 'place_'
   }
   const layers_enabled = ['Power', 'Labels']
   const layer_switcher = new LayerSwitcher(layers, layers_enabled)
@@ -73,7 +74,7 @@ function init() {
       container: 'map',
       style: map_style,
       minZoom: 2,
-      maxZoom: 17.9,
+      maxZoom: 20,
       center: [12, 26],
       localIdeographFontFamily: "'Apple LiSung', 'Noto Sans', 'Noto Sans CJK SC', sans-serif"
     })

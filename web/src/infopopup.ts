@@ -14,7 +14,6 @@ const hidden_keys = [
   'wikidata',
   'wikipedia',
   'construction',
-  'tunnel',
   'is_node',
   'area',
   'gid',
