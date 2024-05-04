@@ -54,7 +54,7 @@ function init() {
     'Hydro naturel': 'waternatural_',
     'Lieux': 'place_'
   }
-  const layers_enabled = ['Power', 'Labels']
+  const layers_enabled = ['Electricité', 'Lieux']
   const layer_switcher = new LayerSwitcher(layers, layers_enabled)
   const url_hash = new URLHash(layer_switcher)
   layer_switcher.urlhash = url_hash
