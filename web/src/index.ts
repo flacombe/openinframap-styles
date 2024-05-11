@@ -75,7 +75,8 @@ function init() {
       style: map_style,
       minZoom: 2,
       maxZoom: 20,
-      center: [12, 26],
+      center: [2.727, 46.125],
+      zoom:4.99,
       localIdeographFontFamily: "'Apple LiSung', 'Noto Sans', 'Noto Sans CJK SC', sans-serif"
     })
   )
