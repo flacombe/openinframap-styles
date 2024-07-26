@@ -652,3 +652,87 @@ layers:
       - name: transition
     from: osm_utility_support
     where: geometry && !BBOX!
+
+  - name: communes
+    map:
+      - cuivre
+    geometry_type: Polygon
+    min_zoom: 7
+    max_zoom: 14
+    id_field: com_insee
+    fields_set: [geom]
+    fields:
+      - name: com_nom
+      - name: com_lot
+      - name: com_fc_annonce
+      - name: com_ft_annonce
+      - name: com_fc_ferme
+      - name: com_ft_ferme
+      - name: com_ftth_taux
+      - name: com_loc_total
+    from: cuivre_communes
+    where: geometry && !BBOX!
+
+  - name: communes_points
+    map:
+      - cuivre
+    geometry_type: Point
+    min_zoom: 5
+    field_sets: [geom_centroid, area]
+    fields:
+      - name: com_nom
+      - name: com_lot
+      - name: com_fc_annonce
+      - name: com_ft_annonce
+      - name: com_fc_ferme
+      - name: com_ft_ferme
+      - name: com_ftth_taux
+      - name: com_loc_total
+    id_field: com_insee
+    from: cuivre_communes
+    where: geometry && !BBOX!
+
+  - name: cuivre_adresses
+    map:
+      - cuivre
+    geometry_type: Point
+    max_zoom: 14
+    id_field: com_insee
+    fields:
+      - name: geom
+        sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_point, !PIXEL_WIDTH! / 4), !BBOX!)
+      - name: cuivre_lot
+      - name: cuivre_catreco
+      - name: fibre_imb
+    from: cuivre_adresses
+    where: cuivre_point && !BBOX!
+
+  - name: ftth_adresses
+    map:
+      - cuivre
+    geometry_type: Point
+    max_zoom: 14
+    id_field: fibre_imb
+    fields:
+      - name: geom
+        sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(fibre_point, !PIXEL_WIDTH! / 4), !BBOX!)
+      - name: fibre_imb_cat
+      - name: fibre_imb_etat
+      - name: fibre_pm
+      - name: fibre_pm_etat
+      - name: fibre_imb_type
+    from: cuivre_ftthipe
+    where: fibre_point && !BBOX!
+
+  - name: cuivre_fibre_liens
+    map:
+      - cuivre
+    geometry_type: LineString
+    max_zoom: 14
+    id_field: fibre_imb
+    fields:
+      - name: geom
+        sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_fibre_path, !PIXEL_WIDTH! / 4), !BBOX!)
+      - name: fibre_imb
+    from: cuivre_adresses
+    where: cuivre_fibre_path && !BBOX!
