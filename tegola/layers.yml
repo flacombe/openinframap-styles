@@ -733,6 +733,5 @@ layers:
     fields:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_fibre_path, !PIXEL_WIDTH! / 4), !BBOX!)
-      - name: fibre_imb
     from: cuivre_adresses
     where: cuivre_fibre_path && !BBOX!
