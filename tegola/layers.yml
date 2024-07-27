@@ -660,7 +660,7 @@ layers:
     min_zoom: 7
     max_zoom: 14
     id_field: com_id
-    fields_set: [geom]
+    field_set: [geom]
     fields:
       - name: com_nom
       - name: com_lot
@@ -677,7 +677,7 @@ layers:
     map:
       - cuivre
     geometry_type: Point
-    min_zoom: 5
+    max_zoom: 8
     id_field: com_id
     field_sets: [geom_centroid, area]
     fields:
@@ -696,6 +696,7 @@ layers:
     map:
       - cuivre
     geometry_type: Point
+    min_zoom: 7
     max_zoom: 14
     id_field: cuivre_id
     fields:
@@ -711,6 +712,7 @@ layers:
     map:
       - cuivre
     geometry_type: Point
+    min_zoom: 7
     max_zoom: 14
     id_field: fibre_id
     fields:
@@ -728,6 +730,7 @@ layers:
     map:
       - cuivre
     geometry_type: LineString
+    min_zoom: 7
     max_zoom: 14
     id_field: cuivre_id
     fields:
