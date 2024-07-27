@@ -659,7 +659,7 @@ layers:
     geometry_type: Polygon
     min_zoom: 7
     max_zoom: 14
-    id_field: com_insee
+    id_field: com_id
     fields_set: [geom]
     fields:
       - name: com_nom
@@ -678,7 +678,7 @@ layers:
       - cuivre
     geometry_type: Point
     min_zoom: 5
-    id_field: com_insee
+    id_field: com_id
     field_sets: [geom_centroid, area]
     fields:
       - name: com_nom
@@ -697,7 +697,7 @@ layers:
       - cuivre
     geometry_type: Point
     max_zoom: 14
-    id_field: cuivre_num_hexacle
+    id_field: cuivre_id
     fields:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_point, !PIXEL_WIDTH! / 4), !BBOX!)
@@ -707,12 +707,12 @@ layers:
     from: cuivre_adresses
     where: cuivre_point && !BBOX!
 
-  - name: ftth_adresses
+  - name: fibre_adresses
     map:
       - cuivre
     geometry_type: Point
     max_zoom: 14
-    id_field: fibre_imb
+    id_field: fibre_id
     fields:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(fibre_point, !PIXEL_WIDTH! / 4), !BBOX!)
@@ -729,7 +729,7 @@ layers:
       - cuivre
     geometry_type: LineString
     max_zoom: 14
-    id_field: fibre_imb
+    id_field: cuivre_id
     fields:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_fibre_path, !PIXEL_WIDTH! / 4), !BBOX!)
