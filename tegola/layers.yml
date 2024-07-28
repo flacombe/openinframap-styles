@@ -679,9 +679,10 @@ layers:
     geometry_type: Point
     max_zoom: 8
     id_field: com_id
-    field_sets: [geom_centroid, area]
+    field_sets: [geom_centroid, area, wiki]
     fields:
-      - name: com_nom
+      - name: name
+        sql: com_nom
       - name: com_lot
       - name: com_fc_annonce
       - name: com_ft_annonce
