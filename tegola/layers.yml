@@ -660,9 +660,10 @@ layers:
     min_zoom: 7
     max_zoom: 14
     id_field: com_id
-    field_sets: [geom]
+    field_sets: [geom, wiki]
     fields:
-      - name: com_nom
+      - name: name
+        sql: com_nom
       - name: com_lot
       - name: com_fc_annonce
       - name: com_ft_annonce
