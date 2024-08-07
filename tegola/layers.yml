@@ -743,7 +743,6 @@ layers:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(path, !PIXEL_WIDTH! / 4), !BBOX!)
       - name: fibre_imb
-      - name: cuivre_pk
-        sql: cuivre_id
+      - name: cuivre_addrrank
     from: cuivre_fibrepaths
     where: path && !BBOX!
