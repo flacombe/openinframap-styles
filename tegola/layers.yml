@@ -723,10 +723,9 @@ layers:
     fields:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(fibre_point, !PIXEL_WIDTH! / 4), !BBOX!)
+      - name: fibre_imb
       - name: fibre_imb_cat
       - name: fibre_imb_etat
-      - name: fibre_pm
-      - name: fibre_pm_etat
       - name: fibre_imb_type
       - name: fibre_adresse
         sql: CONCAT(fibre_num,' ',fibre_voie_type,' ',fibre_voie,', ',fibre_commune)
