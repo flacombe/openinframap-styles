@@ -729,7 +729,7 @@ layers:
       - name: fibre_pm_etat
       - name: fibre_imb_type
       - name: fibre_adresse
-        sql: CONCAT(fibre_num,' ',fibre_voie_type,',' ',fibre_voie,', ',fibre_commune)
+        sql: CONCAT(fibre_num,' ',fibre_voie_type,' ',fibre_voie,', ',fibre_commune)
     from: cuivre_ftthipe
     where: fibre_point && !BBOX!
 
