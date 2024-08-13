@@ -698,7 +698,7 @@ layers:
     map:
       - cuivre
     geometry_type: Point
-    min_zoom: 10
+    min_zoom: 11
     max_zoom: 15
     id_field: cuivre_id
     fields:
@@ -717,7 +717,7 @@ layers:
     map:
       - cuivre
     geometry_type: Point
-    min_zoom: 10
+    min_zoom: 11
     max_zoom: 15
     id_field: fibre_id
     fields:
@@ -736,7 +736,7 @@ layers:
     map:
       - cuivre
     geometry_type: LineString
-    min_zoom: 10
+    min_zoom: 11
     max_zoom: 15
     id_field: path_id
     fields:
