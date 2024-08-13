@@ -45,3 +45,13 @@ docker run -d --rm -v /tmp:/tmp -e BOUNDS=-180,-85.0511,180,85.0511 -e DB_URI=po
 
 `BOUNDS` states which extent is served by the tileserver  
 `DB_URI` sets connection to the database
+
+### Cache seeding
+
+It is possible to use tileserver image to seed cache with a `docker run` command.
+
+For instance for `openinframap` map from zoom 2 to zoom 6 with interactive docker:
+
+```sh
+docker run --rm --name=tegola_seed -v /tmp:/tmp --network=oim-internal -e BOUNDS=-180,-85.0511,180,85.0511 -e DB_URI=postgres://user:password@host:port/database openinframap/tileserver cache seed --config /etc/tegola/config.toml --min-zoom 2 --max-zoom 6 --map openinframap --overwrite
+```
