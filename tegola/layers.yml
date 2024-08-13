@@ -658,7 +658,7 @@ layers:
       - cuivre
     geometry_type: Polygon
     min_zoom: 7
-    max_zoom: 14
+    max_zoom: 15
     id_field: com_id
     field_sets: [geom, wiki]
     fields:
