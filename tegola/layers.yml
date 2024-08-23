@@ -705,7 +705,6 @@ layers:
       - name: geom
         sql: ST_AsMVTGeom(ST_SimplifyPreserveTopology(cuivre_point, !PIXEL_WIDTH! / 4), !BBOX!)
       - name: cuivre_lot
-      - name: cuivre_catreco
       - name: cuivre_adresse
         sql: CONCAT(cuivre_num,' ',cuivre_voie,', ',cuivre_commune)
       - name: fibre_imb
