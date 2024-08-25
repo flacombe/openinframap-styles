@@ -31,13 +31,26 @@ table(
 )
 
 table(
+    "waterways_landmarks",
+    {"waterway": ["waterfall"], "ford": ["yes"]},
+    ["point"],
+    columns=[
+        type_col,
+        str_col("name"),
+        str_col("height")
+    ],
+)
+
+table(
     "waterbodies",
-    {"water": ["reservoir"]},
+    {"water": ["reservoir", "basin", "pond", "wastewater"]},
     "polygon",
     columns=[
         str_col("name"),
         str_col("operator"),
-        str_col("capacity")
+        str_col("capacity"),
+        str_col("basin"),
+        str_col("intermittent")
     ],
 )
 
