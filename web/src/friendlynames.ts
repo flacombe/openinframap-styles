@@ -10,14 +10,8 @@ const friendlyNames: { [key: string]: string } = {
   power_switch: 'Organe',
   power_compensator: 'Compensateur',
   power_cable: 'Câble électrique',
-  power_line_1: 'Ligne électrique',
-  power_line_2: 'Ligne électrique',
-  power_line_3: 'Ligne électrique',
-  power_line_4: 'Ligne électrique',
-  power_line_underground_1: 'Câble électrique',
-  power_line_underground_2: 'Câble électrique',
-  power_line_underground_3: 'Câble électrique',
-  power_line_underground_4: 'Câble électrique',
+  power_line: 'Ligne électrique',
+  power_line_underground: 'Câble électrique',
   power_line_case: 'Câble électrique',
   power_line_label: 'Ligne électrique',
   power_solar_panel: 'Panneau solaire',
@@ -37,8 +31,11 @@ const friendlyNames: { [key: string]: string } = {
   water_body: 'Retenue',
   water_structure_gear: 'Hydraulique',
   waternatural_river: 'Cours d\'eau',
+  waternatural_falls: 'Cascade',
+  waternatural_fords: 'Gué',
   water_obstacle_line: 'Obstacle',
-  water_obstacle_poly: 'Obstacle'
+  water_obstacle_poly: 'Obstacle',
+  operator: 'Exploitant'
 }
 
 export default friendlyNames
