@@ -232,7 +232,7 @@ const layers: LayerSpecificationWithZIndex[] = [
     source: 'naturalmap',
     minzoom: 13,
     'source-layer': 'water_river',
-    filter: ["all",
+    filter: ["any",
       ["==", ['get', 'intermittent'], 'yes']
     ],
     paint: {
@@ -282,9 +282,6 @@ const layers: LayerSpecificationWithZIndex[] = [
       ["==", ['get', 'type'], "waterfall"]
     ],
     minzoom: 11,
-    paint: {
-      'icon-color': colour_natural
-    },
     layout: {
       'icon-image': 'water_fall'
     }
@@ -299,9 +296,6 @@ const layers: LayerSpecificationWithZIndex[] = [
       ["==", ['get', 'type'], "yes"]
     ],
     minzoom: 15,
-    paint: {
-      'icon-color': colour_natural
-    },
     layout: {
       'icon-image': 'water_ford'
     }
