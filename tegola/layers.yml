@@ -576,7 +576,6 @@ layers:
     field_sets: [geom, name]
     from: osm_waterbodies
     fields:
-      - name: type
       - name: basin
         sql: tags -> 'basin'
       - name: intermittent
@@ -615,7 +614,6 @@ layers:
     min_zoom: 10
     field_sets: [geom, name]
     fields:
-      - name: type
       - name: height
     id_field: osm_id
     from: osm_waterways_landmarks
