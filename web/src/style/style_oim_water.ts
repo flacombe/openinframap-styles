@@ -179,6 +179,26 @@ const layers: LayerSpecificationWithZIndex[] = [
     type: 'fill',
     source: 'openinframap',
     'source-layer': 'water_body',
+    filter: ["any",
+      ["!", ["has", "intermittent"]],
+      ["!=", ["get", "intermittent"], "yes"]
+    ],
+    minzoom: 7,
+    paint: {
+      'fill-opacity': 0.7,
+      'fill-color': "#284893",
+      'fill-outline-color': "#232323"
+    }
+  },
+  {
+    zorder: 203,
+    id: 'water_body_intermittent',
+    type: 'fill',
+    source: 'openinframap',
+    'source-layer': 'water_body',
+    filter: ["any",
+      ["==", ['get', 'intermittent'], 'yes']
+    ],
     minzoom: 7,
     paint: {
       'fill-opacity': 0.7,
@@ -261,7 +281,7 @@ const layers: LayerSpecificationWithZIndex[] = [
     filter: ["any",
       ["==", ['get', 'type'], "waterfall"]
     ],
-    minzoom: 10,
+    minzoom: 11,
     paint: {
       'icon-color': colour_natural
     },
@@ -278,7 +298,7 @@ const layers: LayerSpecificationWithZIndex[] = [
     filter: ["any",
       ["==", ['get', 'type'], "yes"]
     ],
-    minzoom: 14,
+    minzoom: 15,
     paint: {
       'icon-color': colour_natural
     },

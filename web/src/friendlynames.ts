@@ -29,6 +29,7 @@ const friendlyNames: { [key: string]: string } = {
   water_flow_inlet: 'Embouchure',
   water_flow_outlet: 'Exutoire',
   water_body: 'Retenue',
+  water_body_intermittent: 'Retenue non permanante',
   water_structure_gear: 'Hydraulique',
   waternatural_river: 'Cours d\'eau',
   waternatural_falls: 'Cascade',
