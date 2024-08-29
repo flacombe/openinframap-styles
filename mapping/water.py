@@ -35,7 +35,8 @@ table(
     {"waterway": ["waterfall"], "ford": ["yes"]},
     ["points"],
     columns=[
-        type_col,
+        str_col("waterway"),
+        str_col("ford"),
         str_col("name"),
         str_col("height")
     ],
@@ -49,6 +50,7 @@ table(
         str_col("name"),
         str_col("operator"),
         str_col("capacity"),
+        str_col("water"),
         str_col("basin"),
         str_col("intermittent")
     ],

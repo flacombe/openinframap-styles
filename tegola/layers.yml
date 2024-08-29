@@ -557,15 +557,10 @@ layers:
       - name: substance
       - name: type
       - name: man_made
-        sql: tags -> 'man_made'
       - name: tunnel
-        sql: tunnel
       - name: usage
-        sql: tags -> 'usage'
       - name: diameter
-        sql: tags -> 'diameter'
       - name: intermittent
-        sql: tags -> 'intermittent'
     from: osm_waterways
     where: >
       geometry && !BBOX! AND type IN ('canal', 'pressurised') AND ST_Length(geometry) > !PIXEL_WIDTH! / 4
@@ -577,9 +572,10 @@ layers:
     from: osm_waterbodies
     fields:
       - name: basin
-        sql: tags -> 'basin'
+      - name: capacity
       - name: intermittent
-        sql: tags -> 'intermittent'
+      - name: water
+        sql: tags -> 'water'
     where: > 
       geometry && !BBOX!
 
@@ -615,6 +611,10 @@ layers:
     field_sets: [geom, name]
     fields:
       - name: height
+      - name: waterway
+        sql: tags -> 'waterway'
+      - name: ford
+        sql: tags -> 'ford'
     id_field: osm_id
     from: osm_waterways_landmarks
     where: >

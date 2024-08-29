@@ -279,7 +279,7 @@ const layers: LayerSpecificationWithZIndex[] = [
     source: 'openinframap',
     'source-layer': 'water_landmarks',
     filter: ["any",
-      ["==", ['get', 'type'], "waterfall"]
+      ["==", ['get', 'waterway'], "waterfall"]
     ],
     minzoom: 11,
     layout: {
@@ -293,7 +293,7 @@ const layers: LayerSpecificationWithZIndex[] = [
     source: 'openinframap',
     'source-layer': 'water_landmarks',
     filter: ["any",
-      ["==", ['get', 'type'], "yes"]
+      ["==", ['get', 'ford'], "yes"]
     ],
     minzoom: 15,
     layout: {
