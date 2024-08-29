@@ -575,6 +575,12 @@ layers:
     id_field: osm_id
     field_sets: [geom, name]
     from: osm_waterbodies
+    fields:
+      - name: type
+      - name: basin
+        sql: tags -> 'basin'
+      - name: intermittent
+        sql: tags -> 'intermittent'
     where: > 
       geometry && !BBOX!
 
