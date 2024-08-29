@@ -604,6 +604,18 @@ layers:
       St_GeometryType(geometry)='ST_LineString' AND 
       ST_Length(geometry) > !PIXEL_WIDTH! / 4
 
+  - name: water_landmarks
+    geometry_type: Point
+    min_zoom: 10
+    field_sets: [geom, name]
+    fields:
+      - name: type
+      - name: height
+    id_field: osm_id
+    from: osm_waterways_landmarks
+    where: >
+      geometry && !BBOX!
+
   - name: water_river
     map: 
       - natural

@@ -33,7 +33,7 @@ table(
 table(
     "waterways_landmarks",
     {"waterway": ["waterfall"], "ford": ["yes"]},
-    ["point"],
+    ["points"],
     columns=[
         type_col,
         str_col("name"),

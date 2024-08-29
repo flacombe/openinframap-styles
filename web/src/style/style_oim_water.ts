@@ -97,6 +97,14 @@ const obstacle_visible_p: ExpressionSpecification = ["any",
   [">", ['zoom'], 12]
 ];
 
+const landmark_visible_p: ExpressionSpecification = ["any",
+  ["all",
+    ["==", ['get', 'type'], "dam"],
+    [">", ['zoom'], 9]
+  ],
+  [">", ['zoom'], 12]
+];
+
 // Rayons, largeurs
 const pipeline_gear_radius: ExpressionSpecification = [
   'interpolate',
@@ -250,6 +258,32 @@ const layers: LayerSpecificationWithZIndex[] = [
     },
     layout: {
       'line-join': 'round'
+    }
+  },
+  {
+    zorder: 305,
+    id: 'water_falls',
+    type: 'symbol',
+    source: 'openinframap',
+    'source-layer': 'water_landmarks',
+    filter: landmark_visible_p,
+    minzoom: 10,
+    paint: text_paint,
+    layout: {
+      'icon-image': 'water_fall'
+    }
+  },
+  {
+    zorder: 305,
+    id: 'water_fords',
+    type: 'symbol',
+    source: 'openinframap',
+    'source-layer': 'water_landmarks',
+    filter: landmark_visible_p,
+    minzoom: 14,
+    paint: text_paint,
+    layout: {
+      'icon-image': 'water_ford'
     }
   },
   {
