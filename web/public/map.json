@@ -36,6 +36,7 @@
 	  {"id": "water_body", "description": "Artificial water bodies", "fields": {}},
 	  {"id": "water_channel", "description": "Artificial water ways", "fields": {}},
 	  {"id": "water_obstacle_poly", "description": "Artificial waterways obstacles as polygons", "fields": {}},
-	  {"id": "water_obstacle_line", "description": "Artifician waterways obstacles as lines", "fields": {}}
+	  {"id": "water_obstacle_line", "description": "Artificial waterways obstacles as lines", "fields": {}},
+	  {"id": "water_landmarks", "description": "Points of interest along waterways", "fields": {}}
   ]
 }
