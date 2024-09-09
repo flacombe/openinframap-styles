@@ -23,7 +23,7 @@ const style: StyleSpecification = {
       url: 'https://map.infos-reseaux.com/heatmap.json'
     }
   },
-  glyphs: 'https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=2raHq2ahXwNHsKorHH5t',
+  glyphs: '/fonts/{fontstack}/{range}.pbf',
   layers: []
 }
 
