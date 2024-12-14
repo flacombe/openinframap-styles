@@ -742,9 +742,11 @@ layers:
       - name: fibre_imb_cat
       - name: fibre_imb_etat
       - name: fibre_imb_type
+      - name: fibre_cuivre_fcr_on
+      - name: fibre_cuivre_ft_on
       - name: fibre_adresse
         sql: CONCAT(fibre_num,' ',fibre_voie_type,' ',fibre_voie,', ',fibre_commune)
-    from: cuivre_ftthipe
+    from: cuivre_fibre
     where: fibre_point && !BBOX!
 
   - name: cuivre_fibre_liens
